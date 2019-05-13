@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flex.resource.map.Vehicle">
+	<resultMap id="VehicleResultCache" type="VehicleEntity">
+		<result property="id" column="vehicle_id" />
+		<result property="device_imei" column="device_imei" />
+		<result property="user_name" column="user_name" />
+		<result property="data_group" column="data_group" />
+		<result property="name" column="vehicle_name" />
+		<result property="plate" column="plate" />
+		<result property="device_type" column="device_type" />
+		<result property="car_type_id" column="car_type_id" />
+		<result property="icon" column="icon" />
+		<result property="use_mileage" column="use_mileage" />
+		<result property="distance_param" column="distance_param" />
+		<result property="use_dev_speed" column="use_dev_speed" />
+		<result property="v_limit_max" column="v_limit_max" />
+		<result property="fuel_loss_limit" column="fuel_loss_limit" />
+		<result property="fuel_add_limit" column="fuel_add_limit" />
+		<result property="log_protocol" column="log_protocol" />
+		<result property="is_using_netkeeping" column="is_using_netkeeping" />
+		<result property="device_sim_no" column="device_sim_no" />
+		<result property="is_forward" column="is_forward" />
+		<result property="fw_ip" column="fw_ip" />
+		<result property="fw_port" column="fw_port" />
+		<result property="driver_name" column="driver_name" />
+		<result property="driver_code" column="driver_code" />
+		<result property="driver_phone" column="driver_phone" />
+		<result property="driver_expired" column="driver_expired" />
+		<result property="num_seats" column="num_seats" />
+		<result property="is_goverment" column="is_goverment" />
+		<result property="next_pay_time" column="next_pay_time" />
+		<result property="expired" column="expired" />
+		<result property="use_input_config" column="use_input_config" />
+		<result property="firmware" column="firmware" />
+		<result property="v_synch" column="v_synch" />
+		<result property="d_synch" column="d_synch" />
+		<result property="active" column="active" />
+		<result property="is_power_electric" column="is_power_electric" />
+		
+	</resultMap>
+	<select id="getAllDevicesCache" resultMap="VehicleResultCache">
+		SELECT DISTINCT
+			t.v_synch,t.d_synch,
+			ifnull(t.is_forward,0) as is_forward, 
+			t.fw_ip, 
+			ifnull(t.fw_port,0) as fw_port,
+			t.un_synch,
+			t.vehicle_id,
+			trim(t.device_imei) as device_imei, 
+			LOWER(t.user_name) as user_name, 
+			ifnull(t.data_group,0) as data_group, 
+			t.vehicle_name,
+			t.plate, 
+			ifnull(t.device_type,0) as device_type, 
+			ifnull(t.car_type_id,0) as car_type_id, 
+			t.icon, 
+			ifnull(t.use_mileage,0) as use_mileage, 
+			ifnull(t.distance_param,0) as distance_param, 
+			ifnull(t.use_dev_speed, 0) as use_dev_speed,
+			ifnull(t.v_limit_max,0) as v_limit_max, 
+			ifnull(t.log_protocol,0) as log_protocol, 
+			ifnull(t.is_goverment, 0) as is_goverment,
+			ifnull(t.is_using_netkeeping,0) as is_using_netkeeping, 
+			t.device_sim_no,
+			if(t.expired<![CDATA[<]]>FROM_UNIXTIME(0),FROM_UNIXTIME(0),t.expired) expired,
+			t.driver_name,
+			t.license_no as driver_code,t.driver_phone,
+			date(t.driver_expired) as driver_expired,
+			ifnull(t.num_seats,1) as num_seats,
+			t.next_pay_time, 
+			ifnull(t.use_input_config,0) as use_input_config ,
+			t.firmware,
+			t.active,
+			ifnull(t.fuel_add_limit,0) as fuel_add_limit,
+			ifnull(t.fuel_loss_limit,0) as fuel_loss_limit,
+			ifnull(t.is_power_electric,0) as is_power_electric
+				
+		 FROM(		
+			SELECT
+						v.is_redis_sync as v_synch, 1 as d_synch, d.is_forward, d.fw_ip, d.fw_port, 1 as un_synch,
+						v.id as vehicle_id, d.imei as device_imei, v.user_name, u.data_group, v.name as vehicle_name,
+						v.plate, d.device_type, v.car_type_id, v.icon, v.use_mileage, v.distance_param, v.use_dev_speed, 
+						v.v_limit_max, v.log_protocol, v.is_goverment, v.is_using_netkeeping, 
+						s.sim_no as device_sim_no,
+						v.expired, dr.`name` as driver_name,dr.license_no,dr.phone as driver_phone,dr.expired as driver_expired,v.num_seats,
+						v.next_pay_time, v.use_input_config, d.firmware, v.active as active, v.fuel_add_limit,v.fuel_loss_limit, v.is_power_electric
+						FROM m_vehicle v
+						INNER JOIN m_user u ON v.user_name = u.user_name
+						INNER JOIN m_device d ON d.vehicle_id = v.id 
+						LEFT JOIN m_sim s on s.sim_no = d.device_sim_no
+						LEFT JOIN m_driver dr on v.driver_id = dr.id
+						where v.is_redis_sync =0
+			UNION ALL
+			SELECT
+						0 v_synch,d.is_redis_sync as d_synch,d.is_forward, d.fw_ip, d.fw_port,1 as un_synch,
+						0 as vehicle_id, d.imei as device_imei, null as user_name, u.data_group, null as vehicle_name,
+						null as plate, d.device_type, 0 as car_type_id, null as icon, 0 as use_mileage, 0 as distance_param, 0 as use_dev_speed, 
+						0 as v_limit_max, 0 as log_protocol, 0 as is_goverment, 0 as is_using_netkeeping, 
+						s.sim_no as device_sim_no,
+						null as expired, dr.`name` as driver_name,dr.license_no,dr.phone as driver_phone,dr.expired as driver_expired,0 as num_seats,
+						null as next_pay_time, 0 as use_input_config, d.firmware,0 as active,0 as fuel_add_limit,0 as fuel_loss_limit, 0 as is_power_electric
+						FROM m_device d
+						LEFT JOIN m_vehicle v ON d.vehicle_id = v.id 
+						LEFT JOIN m_user u ON v.user_name = u.user_name
+						LEFT JOIN m_sim s on s.sim_no = d.device_sim_no
+						LEFT JOIN m_driver dr on v.driver_id = dr.id
+						where d.is_redis_sync =0 AND d.device_type !=28 and v.id is NULL
+		)t
+		WHERE t.un_synch=1 limit 100
+	</select>
+	<select id="getAllDevices" resultMap="VehicleResultCache">
+		SELECT DISTINCT
+			t.v_synch,t.d_synch,
+			ifnull(t.is_forward,0) as is_forward, 
+			t.fw_ip, 
+			ifnull(t.fw_port,0) as fw_port,
+			t.un_synch,
+			t.vehicle_id,
+			trim(t.device_imei) as device_imei, 
+			LOWER(t.user_name) as user_name, 
+			ifnull(t.data_group,0) as data_group, 
+			t.vehicle_name,
+			t.plate, 
+			ifnull(t.device_type,0) as device_type, 
+			ifnull(t.car_type_id,0) as car_type_id, 
+			t.icon, 
+			ifnull(t.use_mileage,0) as use_mileage, 
+			ifnull(t.distance_param,0) as distance_param, 
+			ifnull(t.use_dev_speed, 0) as use_dev_speed,
+			ifnull(t.v_limit_max,0) as v_limit_max, 
+			ifnull(t.log_protocol,0) as log_protocol, 
+			ifnull(t.is_goverment, 0) as is_goverment,
+			ifnull(t.is_using_netkeeping,0) as is_using_netkeeping, 
+			t.device_sim_no,
+			if(t.expired<![CDATA[<]]>FROM_UNIXTIME(0),FROM_UNIXTIME(0),t.expired) expired,
+			t.driver_name,
+			t.license_no as driver_code,
+			ifnull(t.num_seats,1) as num_seats,
+			t.next_pay_time, 
+			ifnull(t.use_input_config,0) as use_input_config ,
+			t.firmware,
+			t.active,
+			ifnull(t.fuel_add_limit,0) as fuel_add_limit,
+			ifnull(t.fuel_loss_limit,0) as fuel_loss_limit,
+			ifnull(t.is_power_electric,0) as is_power_electric
+			
+		 FROM(		
+			SELECT
+						v.is_redis_sync as v_synch,d.is_redis_sync as d_synch,d.is_forward, d.fw_ip, d.fw_port,if(v.is_redis_sync = 0 or d.is_redis_sync=0,1,0) as un_synch,
+						v.id as vehicle_id, d.imei as device_imei, v.user_name, u.data_group, v.name as vehicle_name,
+						v.plate, d.device_type, v.car_type_id, v.icon, v.use_mileage, v.distance_param, v.use_dev_speed, 
+						v.v_limit_max, v.log_protocol, v.is_goverment, v.is_using_netkeeping, 
+						s.sim_no as device_sim_no, 
+						v.expired, dr.`name` as driver_name,dr.license_no,v.num_seats,
+						v.next_pay_time, v.use_input_config, d.firmware,v.active,v.fuel_add_limit,v.fuel_loss_limit, v.is_power_electric
+						FROM m_vehicle v
+						INNER JOIN m_user u ON v.user_name = u.user_name
+						INNER JOIN m_device d ON d.vehicle_id = v.id 
+						LEFT JOIN m_sim s on s.sim_no = d.device_sim_no
+						LEFT JOIN m_driver dr on v.driver_id = dr.id
+			UNION ALL
+			SELECT
+						v.is_redis_sync as v_synch,d.is_redis_sync as d_synch,d.is_forward, d.fw_ip, d.fw_port,if(v.is_redis_sync = 0 or d.is_redis_sync=0,1,0) as un_synch,
+						v.id as vehicle_id, d.imei as device_imei, v.user_name, u.data_group, v.name as vehicle_name,
+						v.plate, d.device_type, v.car_type_id, v.icon, v.use_mileage, v.distance_param, v.use_dev_speed, 
+						v.v_limit_max, v.log_protocol, v.is_goverment, v.is_using_netkeeping, 
+						s.sim_no as device_sim_no, 
+						v.expired, dr.`name` as driver_name,dr.license_no,v.num_seats,
+						v.next_pay_time, v.use_input_config, d.firmware,v.active,v.fuel_add_limit,v.fuel_loss_limit,  v.is_power_electric
+						FROM m_device d
+						INNER JOIN m_vehicle v ON d.vehicle_id = v.id 
+						INNER JOIN m_user u ON v.user_name = u.user_name
+						LEFT JOIN m_sim s on s.sim_no = d.device_sim_no
+						LEFT JOIN m_driver dr on v.driver_id = dr.id
+		)t
+	</select>
+	<update id="updateVehicleSynchStatus" parameterType="VehicleEntity">
+		UPDATE m_vehicle SET is_redis_sync = 1 where id = #{id}
+	</update>
+	<update id="updateDeviceSynchStatus" parameterType="VehicleEntity">
+		UPDATE m_device SET is_redis_sync = 1 WHERE imei = #{device_imei}
+	</update>
+	
+	
+</mapper> 

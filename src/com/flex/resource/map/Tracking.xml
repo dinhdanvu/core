@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flex.resource.map.Tracking">
+	<resultMap id="TrackingResult" type="TrackingEntity">
+		<result property="vehicle_id" column="vehicle_id" />
+		<result property="data_group" column="data_group" />
+		<result property="imei" column="imei" />
+		<result property="trk_time" column="trk_time" />
+		<result property="user_name" column="user_name" />
+		<result property="formular" column="formular" />
+		<result property="basic_sensor_value" column="basic_sensor_value" />
+	</resultMap>
+	<insert id="insertHistoryData" parameterType="TrackingEntity">
+	<if test="value_list != null and value_list.size()>0">
+	<!-- <isNotEmpty property="value_list"> -->
+      INSERT INTO ${db}.d_data_${data_group}
+		(
+			imei,vehicle_id,vehicle_name,plate,icon, user_name, trk_time, latitude, longitude, altitude, satellites, `engine`, status, dev_status, continue_driving_time, velocity, 
+			speed, speed_calc, speed_gps, speed_sensor, speed_history, 
+			distance, distance_on_day, direction, battery_level, address, mapid, 
+			mileage, mileage_calc, mileage_gps, mileage_sensor, driver_code,driver_name,is_device_driver,
+			basic_sensor_value,
+			v_limit_max,
+			created_user,
+			created_date,
+			updated_user
+		)VALUES
+			<foreach collection="value_list" item="model" index="index" separator=","> 
+			<!-- <iterate property="value_list" conjunction="," > -->
+			(
+				#{model.imei},
+				#{model.vehicle_id},
+				#{model.vehicle_name},
+				#{model.plate},
+				#{model.icon},
+				#{model.user_name},
+				#{model.trk_time},
+				#{model.latitude},
+				#{model.longitude},
+				#{model.altitude},
+				#{model.satellites},
+				#{model.engine},
+				#{model.status}, 
+				#{model.dev_status}, 
+				#{model.continue_driving_time},
+				#{model.velocity},
+				#{model.speed}, 
+				#{model.speed_calc}, 
+				#{model.speed_gps}, 
+				#{model.speed_pulse}, 
+				#{model.speed_history}, 
+				#{model.distance}, 
+				#{model.distance_on_day},
+				#{model.direction},
+				#{model.battery_level},
+				#{model.address}, 
+				#{model.mapid}, 
+				#{model.mileage}, 
+				#{model.mileage_calc}, 
+				#{model.mileage_gps}, 
+				#{model.mileage_sensor}, 
+				#{model.driver_code},
+				#{model.driver_name},
+				#{model.is_device_driver},
+				#{model.basic_sensor_value},
+				#{model.v_limit_max},
+				'TCP',
+				now(),
+				'TCP'
+			)
+			</foreach>
+	        <!-- </iterate> -->
+		<!-- </isNotEmpty> -->
+		</if>
+    </insert>
+	
+	<select id="getFixSensorResult" resultMap="TrackingResult" parameterType="TrackingEntity">
+		SELECT 
+		d.vehicle_id,d.imei,d.trk_time,d.user_name,
+		s.vehicle_id,s.formular,
+		d.basic_sensor_value,${data_group} as data_group
+		FROM `d_data_${data_group}` `d`
+		INNER JOIN `d_vehicle_sensor_setting` `s` ON s.sensor_number =11 and `s`.`vehicle_id` = `d`.`vehicle_id` and `s`.`is_delete` = 0
+		WHERE `d`.`vehicle_id` = #vehicle_id#
+		AND `d`.`trk_time` > #range_from#
+		AND `d`.`trk_time` <![CDATA[<]]> #{range_to}
+		ORDER BY  `d`.`trk_time` ASC
+	</select> 
+	<select id="select_test" resultType="String" parameterType="String">
+		SELECT 	1 from dual
+	</select> 
+			    	    
+</mapper>

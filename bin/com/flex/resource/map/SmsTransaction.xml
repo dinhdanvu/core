@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flex.resource.map.SmsTransaction">
+	<resultMap id="SmsTransactionResultSynch" type="SmsTransactionEntity">
+		<result property="id" column="id" />
+		<result property="user_name" column="user_name" />
+		<result property="vehicle_id" column="vehicle_id" />
+		<result property="trk_time" column="trk_time" />
+		<result property="type" column="type" />
+		<result property="content" column="content" />
+		<result property="phones" column="phones" />
+		<result property="money" column="money" />
+		
+	</resultMap>
+	
+	
+	<insert id="insertSmsTransaction" parameterType="SmsTransactionEntity">
+		INSERT INTO u_sms_transaction 
+		(
+			user_name, vehicle_id, trk_time, type, content, phones, money, created_user,created_date,updated_user
+		)
+		VALUES
+		(
+			#{user_name},
+			#{vehicle_id},
+			#{trk_time},
+			0,
+			#{content},
+			#{phones},
+			#{money},
+			'TCP',
+			now(),
+			'TCP'
+		)
+	</insert>
+	
+</mapper>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flex.resource.map.FuelConsumedSummary">
+	<insert id="insertFuelConsumedSummary" parameterType="FuelConsumedSummaryEntity">
+		INSERT INTO ${db}.d_summary_fuel_consumed_${data_group}(vehicle_id,vehicle_name,plate,imei,user_name,date,sensor_index,sensor_param_code,sensor_label,signal_start,signal_end,engine_on_time,engine_on_move_time,fuel_consumed,formular,created_user,created_date,updated_user)
+		VALUES(#{vehicle_id},#{vehicle_name},#{plate},#{imei},#{user_name},#{date},#{sensor_index},#{sensor_param_code},#{sensor_label},#{signal_start},#{signal_end},#{engine_on_time},#{engine_on_move_time},#{fuel_consumed},#{formular},'TCP',now(),'TCP')
+		
+    </insert>
+</mapper>

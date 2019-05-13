@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flex.resource.map.ConcreteRoute">
+	<resultMap id="ConcreteRouteResult" type="ConcreteRouteEntity" extends="BaseInfo.baseInfo">
+		<result property="id" column="id" />
+	</resultMap>
+	<insert id="insertConcreteRoute" parameterType="ConcreteRouteEntity">
+		INSERT INTO ${db}.d_concrete_routes_${data_group} 
+		(
+			vehicle_id,
+			vehicle_name,
+			plate,
+			imei,
+			user_name,
+			`from`,
+			`to`,
+			discharge_count,
+			discharge_time,
+			blend_time,
+			stop_time,
+			engine_off_time,
+			distance,
+			start_address,
+			start_latitude,
+			start_longitude,
+			start_map_id,
+			discharge_map_id,
+			discharge_address,
+			discharge_time_point,
+			stop_address,
+			stop_latitude,
+			stop_longitude,
+			stop_map_id,
+			driver_code,
+			driver_name,
+			blend_distance,
+			stop_distance,
+			created_user,
+			created_date,
+			updated_user
+		)
+		VALUES
+			(
+				#{vehicle_id},
+				#{vehicle_name},
+				#{plate},
+				#{imei},
+				#{user_name},
+				#{from},
+				#{to},
+				#{discharge_count},
+				#{discharge_time},
+				#{blend_time},
+				#{stop_time},
+				#{engine_off_time},
+				#{distance},
+				#{start_address},
+				#{start_latitude},
+				#{start_longitude},
+				#{start_map_id},
+				#{discharge_map_id},
+				#{discharge_address},
+				#{discharge_time_point},
+				#{stop_address},
+				#{stop_latitude},
+				#{stop_longitude},
+				#{stop_map_id},
+				#{driver_code},
+				#{driver_name},
+				#{blend_distance},
+				#{stop_distance},
+				'TCP',
+				now(),
+				'TCP'
+			)	
+	</insert>
+	
+</mapper>

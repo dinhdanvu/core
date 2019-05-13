@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flex.resource.map.VehicleGoverment">
+
+	<resultMap id="GovermentDevicesReport" type="VehicleGovermentEntity">
+		<result property="device_imei" column="device_imei" />
+		<result property="vehicle_id" column="vehicle_id" />
+		<result property="user_name" column="user_name" />
+		<result property="is_goverment" column="is_goverment" />
+		<result property="data_group" column="data_group" />
+		<result property="is_process" column="is_process" />
+		<result property="range_from" column="range_from" />
+		<result property="range_to" column="range_to" />
+		
+	</resultMap>
+	
+	<select id="getGovermentDevices" resultMap="GovermentDevicesReport">
+		select d.imei as device_imei, v.id as vehicle_id, v.user_name, v.is_goverment, u.data_group, 0 as is_process, null as range_from, null as range_to  
+		from m_vehicle v 
+		inner join m_device d on d.vehicle_id = v.id
+		left join m_user u on u.user_name = v.user_name
+		where v.is_delete =0 and v.active=1 and v.plate&lt;&gt;'' and v.user_name&lt;&gt;'khoadasg' and v.is_goverment=1 and v.id=273420
+		order by v.user_name, u.data_group
+	</select>
+	
+</mapper>

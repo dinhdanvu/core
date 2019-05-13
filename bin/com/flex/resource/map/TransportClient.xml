@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flex.resource.map.TransportClient">
+	<resultMap id="GovermentHistoryData" type="TransportationClientEntity">
+		<result property="dataTime" column="dataTime" />
+		<result property="door" column="door" />
+		<result property="heading" column="heading" />
+		<result property="ignition" column="ignition" />
+		<result property="speed" column="speed" />
+		<result property="vehicle" column="vehicle" />
+		<result property="x" column="x" />
+		<result property="y" column="y" />
+		<result property="z" column="z" />
+		<result property="driver" column="driver" />
+		
+	</resultMap>
+	<select id="getGovermentHistoryData" resultMap="GovermentHistoryData" parameterType="VehicleGovermentEntity">
+		select trk_time as dataTime, basic_sensor_value, direction as heading, `engine` as ignition, speed, plate as vehicle, longitude as x, latitude as y, altitude as z, driver_code as driver
+				from ${db}.d_data_${data_group}
+				where vehicle_id = #{vehicle_id} and trk_time>= #{range_from} and trk_time<![CDATA[<]]> #{range_to}
+				ORDER BY  trk_time ASC 
+	</select>
+			      
+</mapper>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flex.resource.map.Setting">
+	<resultMap id="SettingResult" type="SettingEntity" extends="BaseInfo.baseInfo">
+
+		<result property="key" column="key" />
+		<result property="key_title" column="key_title" />
+		<result property="value" column="value" />
+		<result property="note" column="note" />
+		<result property="module_id" column="module_id" />
+		
+	</resultMap>
+	<select id="getValue" parameterType="String" resultType="String">
+		SELECT value FROM m_setting WHERE key = #{value}
+	</select>
+	<select id="getAllSetting" resultMap="SettingResult">
+		SELECT * FROM m_setting
+	</select>
+	<update id="updateSetting" parameterType="SettingEntity">
+		UPDATE m_setting SET value = #{value}
+		WHERE key = #{key}
+	</update>
+</mapper>

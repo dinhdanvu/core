@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flex.resource.map.Location">
+	<resultMap id="LocationResultFull" type="LocationEntity"
+		extends="BaseInfo.baseInfo">
+		<result property="id" column="id" />
+		<result property="user_name" column="user_name" />
+		<result property="longitude1" column="longitude1" />
+		<result property="latitude1" column="latitude1" />
+		<result property="longitude2" column="longitude2" />
+		<result property="latitude2" column="latitude2" />
+		<result property="location_type_id" column="location_type_id" />		
+		<result property="name" column="name" />
+		<result property="active" column="active" />
+	</resultMap>
+	<resultMap id="LocationResultMin" type="LocationEntity">
+		<result property="id" column="id" />
+		<result property="user_name" column="user_name" />
+		<result property="longitude1" column="longitude1" />
+		<result property="latitude1" column="latitude1" />
+		<result property="longitude2" column="longitude2" />
+		<result property="latitude2" column="latitude2" />
+		<result property="radius" column="radius" />
+		<result property="name" column="name" />
+		<result property="location_type_id" column="location_type_id" />
+		<result property="location_shape" column="location_shape" />
+		<result property="active" column="active" />
+		<result property="is_delete" column="is_delete" />
+	</resultMap>
+	<select id="getAllLocations" resultMap="LocationResultMin"
+		parameterType="LocationEntity">
+		SELECT l.id,l.user_name,l.location_shape,l.radius, ifnull(l.longitude1,0) as longitude1, ifnull(l.latitude1,0) as latitude1, ifnull(l.longitude2,0) as longitude2, ifnull(l.latitude2,0) as latitude2,
+		l.name, l.location_type_id, ifnull(l.active,0) as active,is_delete
+		FROM
+		u_location l
+		where active=1
+		<if test="id>0">
+			and id = #{id}
+		</if>
+		<if test="user_name != null and user_name!=''">
+			and l.user_name = #{user_name}
+		</if>
+	</select>
+	<select id="getSynchLocations" resultMap="LocationResultMin"
+		parameterType="LocationEntity">
+		SELECT l.id,l.user_name,l.location_shape,l.radius, ifnull(l.longitude1,0) as longitude1, ifnull(l.latitude1,0) as latitude1, ifnull(l.longitude2,0) as longitude2, ifnull(l.latitude2,0) as latitude2,
+		l.name, l.location_type_id, ifnull(l.active,-1) as active,is_delete
+		FROM
+		u_location l WHERE  l.user_name IS NOT NULL
+		<if test="is_redis_sync>=0">
+			and is_redis_sync = #{is_redis_sync}
+		</if>
+		limit 100
+	</select>
+	<select id="getLocationPolyPoits" resultType="String" parameterType="long">
+		select 
+			GROUP_CONCAT(
+			CONCAT(ifnull(latitude,0),',',ifnull(longitude,0))
+			SEPARATOR ';' 
+			) as str 
+		from 
+		(
+			select * from u_location_polygon where location_id=${value}
+			ORDER BY id ASC
+		)t 
+	</select>
+	<update id="updateLocationSynchStatus" parameterType="LocationEntity">
+		UPDATE u_location SET is_redis_sync = 1 WHERE id = #{id}
+	</update>
+</mapper>

@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flex.resource.map.ReportSummary">
+	<resultMap id="ReportSummaryResult" type="ReportSummaryEntity">
+		<result property="id" column="id" />
+		<result property="date" column="date" />
+		<result property="imei" column="imei" />
+		<result property="vehicle_id" column="vehicle_id" />
+		<result property="vehicle_name" column="vehicle_name" />
+		<result property="plate" column="plate" />
+		<result property="user_name" column="user_name" />
+		<result property="driver_code" column="driver_code" />
+		<result property="driver_name" column="driver_name" />
+		<result property="move_time" column="move_time" />
+		<result property="stop_time" column="stop_time" />
+		<result property="distance" column="distance" />
+		<result property="move_count" column="move_count" />
+		<result property="stop_count" column="stop_count" />
+		<result property="parking_count" column="parking_count" />
+		<result property="parking_time" column="parking_time" />
+		<result property="stop_in_location_count" column="stop_in_location_count" />
+		<result property="stop_in_location_time" column="stop_in_location_time" />
+		<result property="engine_on_count" column="engine_on_count" />
+		<result property="engine_on_time" column="engine_on_time" />
+		
+		<result property="driver_change_count" column="driver_change_count" />
+		<result property="driver_card_on_time" column="driver_card_on_time" />
+		<result property="toll_in_count" column="toll_in_count" />
+		<result property="toll_in_money" column="toll_in_money" />
+		<result property="location_out_count" column="location_out_count" />
+		<result property="location_in_count" column="location_in_count" />
+		<result property="location_in_time" column="location_in_time" />
+		<result property="stop_out_location_count" column="stop_out_location_count" />
+		<result property="stop_out_location_time" column="stop_out_location_time" />
+		<result property="power_lost_count" column="power_lost_count" />
+		<result property="power_lost_time" column="power_lost_time" />
+		<result property="no_gps_count" column="no_gps_count" />
+		<result property="no_gprs_count" column="no_gprs_count" />
+		<result property="routes_count" column="routes_count" />
+		<result property="no_gps_time" column="no_gps_time" />
+		<result property="no_gprs_time" column="no_gprs_time" />
+		<result property="open_door_num" column="open_door_num" />
+		<result property="engine_off_num" column="engine_off_num" />
+		<result property="max_speed" column="max_speed" />
+		<result property="move_first" column="move_first" />
+		<result property="move_end" column="stop_end" />
+		<result property="stop_engine_on_time" column="stop_engine_on_time" />
+		<result property="stop_engine_on_count" column="stop_engine_on_count" />
+		<result property="avg_speed" column="avg_speed" />
+		<result property="account_msg" column="account_msg" />
+		<result property="record_count" column="record_count" />
+		<result property="conditional_on_count" column="conditional_on_count" />
+		<result property="conditional_on_time" column="conditional_on_time" />
+		<result property="container_on_count" column="container_on_count" />
+		<result property="container_on_time" column="container_on_time" />
+	</resultMap>
+	<insert id="insertSummary" parameterType="ReportSummaryEntity">
+		INSERT INTO ${db}.d_summary_info_${data_group}
+		(
+			date,
+			user_name,
+			imei,
+			vehicle_id,
+			vehicle_name,
+			plate,
+			driver_code,
+			driver_name,
+			is_device_driver,
+			move_time,
+			stop_time,
+			distance,
+			move_count,
+			stop_count,
+			parking_count,
+			parking_time,
+			stop_in_location_count,
+			stop_in_location_time,
+			stop_out_location_count,
+			stop_out_location_time,
+			engine_on_count,
+			engine_on_time,
+			driver_change_count,
+			driver_card_on_time,
+			toll_in_count,
+			toll_in_money,
+			location_out_count,
+			location_in_count,
+			location_in_time,
+			power_lost_count,
+			power_lost_time,
+			no_gps_count,
+			no_gprs_count,
+			routes_count,	
+			no_gps_time,
+			no_gprs_time,
+			open_door_num,
+			engine_off_num,
+			max_speed,
+			move_first,
+			move_end,
+			stop_engine_on_time,
+			stop_engine_on_count,
+			avg_speed,
+			over_speed_count,
+			account_msg,
+			record_count,
+			conditional_on_count,
+			conditional_on_time,
+			container_on_count,
+			container_on_time,
+			created_user,
+			created_date,
+			updated_user
+		)
+		VALUES
+		(
+			#{date},
+			#{user_name},
+			#{imei},
+			#{vehicle_id},
+			#{vehicle_name},
+			#{plate},
+			#{driver_code},
+			#{driver_name},
+			#{is_device_driver},
+			#{move_time},
+			#{stop_time},
+			#{distance},
+			#{move_count},
+			#{stop_count},
+			#{parking_count},
+			#{parking_time},
+			#{stop_in_location_count},
+			#{stop_in_location_time},
+			#{stop_out_location_count},
+			#{stop_out_location_time},
+			#{engine_on_count},
+			#{engine_on_time},
+			#{driver_change_count},
+			#{driver_card_on_time},
+			#{toll_in_count},
+			#{toll_in_money},
+			#{location_out_count},
+			#{location_in_count},
+			#{location_in_time},
+			#{power_lost_count},
+			#{power_lost_time},
+			#{no_gps_count},
+			#{no_gprs_count},
+			#{routes_count},		
+			#{no_gps_time},
+			#{no_gprs_time},
+			#{open_door_num},
+			#{engine_off_num},
+			#{max_speed},
+			#{move_first},
+			#{move_end},
+			#{stop_engine_on_time},
+			#{stop_engine_on_count},
+			#{avg_speed},
+			#{over_speed_count},
+			#{account_msg},
+			#{record_count},
+			#{conditional_on_count},
+			#{conditional_on_time},
+			#{container_on_count},
+			#{container_on_time},
+			'TCP',
+			now(),
+			'TCP'
+		)
+	</insert>
+	<select id="getAllReportSummary" resultMap="ReportSummaryResult">
+		SELECT * FROM ${db}.d_summary_info_${data_group}
+	</select>
+</mapper>

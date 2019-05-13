@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flex.resource.map.User">
+	<resultMap id="UserResultSynch" type="UserEntity">
+		
+		<result property="user_name" column="user_name" />
+		<result property="name" column="name" />
+		<result property="password" column="password" />
+		<result property="role_id" column="role_id" />
+		<result property="address" column="address" />
+		<result property="phone" column="phone" />
+		<result property="mobile" column="mobile" />
+		<result property="email" column="email" />
+		<result property="server_group" column="server_group" />
+		<result property="data_group" column="data_group" />
+		<result property="operation_type" column="operation_type" />	
+		<result property="active" column="active" />
+		<result property="is_delete" column="is_delete" />
+		<result property="sms_money" column="sms_money" />
+	</resultMap>
+	
+	<select id="getAllUserSynch" resultMap="UserResultSynch">
+		SELECT u.user_name, u.name, u.password, u.role_id,  u.address, u.phone, u.mobile, u.email, u.server_group, u.data_group, u.operation_type, ifnull(u.active,0) as active, u.is_delete, u.sms_money		
+		FROM m_user u where u.is_redis_sync =0  limit 100 
+	</select>
+	
+	<update id="updateUserSynchStatus" parameterType="UserEntity">
+		UPDATE m_user SET is_redis_sync = 1 where user_name= #{user_name}
+	</update>
+	
+	<update id="updateSMSMoney" parameterType="UserEntity">
+		UPDATE m_user SET sms_money = #{sms_money}  WHERE user_name= #{user_name}
+	</update>
+</mapper>

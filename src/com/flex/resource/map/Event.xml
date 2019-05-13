@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flex.resource.map.Event">
+	<resultMap id="EventResult" type="EventEntity" extends="BaseInfo.baseInfo">
+		<result property="id" column="id" />
+		<result property="event_code" column="event_code" />
+		<result property="vehicle_id" column="vehicle_id" />
+		<result property="imei" column="imei" />
+		<result property="user_name" column="user_name" />
+		<result property="trk_time" column="trk_time" />
+		<result property="latitude" column="latitude" />
+		<result property="longitude" column="longitude" />
+		<result property="address" column="address" />
+	</resultMap>
+	<insert id="insertEvent" parameterType="EventEntity">
+		INSERT INTO ${db}.d_event_${data_group}( event_code,event_name, vehicle_id, imei, user_name, driver_code,trk_time, latitude, 
+		longitude,location_id,location_poits, address,description,type, created_user, created_date, updated_user)
+		VALUES
+		<foreach collection="value_list" item="model" index="index" separator=",">
+		(
+			#{model.event_code},#{model.event_name}, #{model.vehicle_id}, #{model.imei}, 
+			#{model.user_name}, #{model.driver_code}, #{model.trk_time}, #{model.latitude}, 
+			#{model.longitude},#{model.location_id},#{model.location_poits},#{model.address},
+			#{model.description},#{model.type}, 'TCP', now(), 'TCP'
+		)
+        </foreach>
+		
+	</insert>
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flex.resource.map.TrailerSummary">
+	<insert id="insertTrailerSummaryData" parameterType="TrailerSummaryEntity">
+      INSERT INTO ${db}.d_trailer_summary_info_${data_group}
+		(
+			trailer_id,vehicle_id,trailer_name,vehicle_name,user_name,driver_code,driver_name,plate,date,move_time,stop_time,distance,associate_count,unassociate_count,created_user,created_date
+		)VALUES
+			<foreach collection="value_list" item="item" index="index" separator=","> 
+			(
+				#{item.trailer_id},#{item.vehicle_id},#{item.trailer_name},#{item.vehicle_name},#{item.user_name},#{item.driver_code},#{item.driver_name},#{item.plate},#{item.date},#{item.move_time},#{item.stop_time},#{item.distance},#{item.associate_count},#{item.unassociate_count},'TCP',now()
+			)
+			</foreach>
+    </insert>
+	   	    
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flex.resource.map.Trailer">
+	<resultMap id="TrailerResultCache" type="TrailerEntity">
+		<result property="id" column="id" />
+		<result property="device_imei" column="device_imei" />
+		<result property="name" column="name" />
+		<result property="user_name" column="user_name" />
+		<result property="icon" column="icon" />
+		<result property="brand" column="brand" />
+		<result property="manufacturer" column="manufacturer" />
+		<result property="first_registration" column="first_registration" />
+		<result property="production_year" column="production_year" />
+		<result property="color" column="color" />
+		<result property="fuel_tank_capacity" column="fuel_tank_capacity" />
+		<result property="tonnage" column="tonnage" />
+		<result property="number_of_cakes" column="number_of_cakes" />
+		<result property="weight" column="weight" />
+		<result property="trailer_long" column="trailer_long" />
+		<result property="wide" column="wide" />
+		<result property="height" column="height"/>
+		<result property="volume_of_tank" column="volume_of_tank" />
+		<result property="vin" column="vin" />
+		<result property="expired" column="expired" />
+		<result property="next_pay_time" column="next_pay_time" />
+		<result property="sale_id" column="sale_id" />
+		<result property="data_group" column="data_group" />
+	</resultMap>
+	<select id="getAllTrailerCache" resultMap="TrailerResultCache">
+		select tr.id,tr.device_imei,tr.name,tr.user_name,tr.icon,tr.brand,tr.manufacturer,if(tr.first_registration='0000-00-00',NULL,tr.first_registration) as first_registration,tr.production_year,tr.color,tr.fuel_tank_capacity,
+		tr.tonnage,
+		tr.number_of_cakes,tr.weight,tr.trailer_long,tr.wide,tr.height,tr.volume_of_tank,tr.vin,if(tr.expired='0000-00-00',NULL,tr.expired) as expired,if(tr.next_pay_time='0000-00-00',NULL,tr.next_pay_time) as next_pay_time,tr.sale_id,tr.active,tr.is_delete,
+				u.data_group
+				from m_trailer tr
+		LEFT JOIN m_user u on u.user_name = tr.user_name
+		where tr.is_redis_sync=0
+	</select>
+	<update id="updateTrailerSynchStatus" parameterType="TrailerEntity">
+		UPDATE m_trailer SET is_redis_sync = 1 where id = #{id}
+	</update>
+</mapper> 

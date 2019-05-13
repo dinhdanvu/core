@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flex.resource.map.VehicleSensorSetting">
+	<resultMap id="VehicleSensorSettingResult" type="VehicleSensorSettingEntity">
+		<result property="id" column="id" />
+		<result property="device_type" column="device_type" />
+		<result property="vehicle_id" column="vehicle_id" />
+		<result property="sensor_param_code" column="sensor_param_code" />
+		<result property="status_alias_map" column="status_alias_map" />
+		<result property="sensor_index" column="sensor_index" />
+		<result property="sensor_type" column="sensor_type" />
+		<result property="is_calib" column="is_calib" />
+		<result property="formular" column="formular" />
+		<result property="is_dependent_sensor" column="is_dependent_sensor" />
+		<result property="dependent_sensor_index" column="dependent_sensor_index" />
+		<result property="dependent_sensor_code" column="dependent_sensor_code" />
+		<result property="dependent_sensor_type" column="dependent_sensor_type" />
+		<result property="dependent_is_calib" column="dependent_is_calib" />
+		<result property="dependent_formular" column="dependent_formular" />
+		<result property="input_name" column="input_name" />
+		<result property="func_name" column="func_name" />
+		<result property="param_unit" column="param_unit" />
+		<result property="is_delete" column="is_delete" />
+		<result property="is_default" column="is_default" />
+	</resultMap>
+	<select id="getAllVehicleSensorSetting" resultMap="VehicleSensorSettingResult">
+	select 
+
+						vs.id,
+						-1 as device_type,
+						vs.vehicle_id,
+						vs.is_delete,
+						0 as is_default,
+						vs.sensor_param_code,
+						sp.status_alias_map,
+						ifnull(vs.sensor_number,0)-1 as sensor_index,
+						ifnull(sp.type,-1) as sensor_type,
+						vs.is_calib,
+						vs.formular,
+						vs.is_dependent_sensor,
+						vs.dependent_sensor_number-1 as dependent_sensor_index,
+						ifnull(vs1.sensor_param_code,'') as dependent_sensor_code,
+						ifnull(sp1.type,-1) as dependent_sensor_type,
+						vs.dependent_is_calib,
+						vs.dependent_formular,
+						vs.display_name as input_name,
+						sp.`name` as func_name,
+						sp.unit as param_unit
+						from u_vehicle_sensor_setting vs
+						INNER JOIN m_sensor_param sp on sp.sensor_code = vs.sensor_param_code
+						LEFT JOIN u_vehicle_sensor_setting vs1 on vs1.sensor_number = vs.dependent_sensor_number AND vs.vehicle_id = vs1.vehicle_id
+						LEFT JOIN m_sensor_param sp1 on sp1.sensor_code = vs1.sensor_param_code
+						WHERE vs.is_redis_sync =0
+			UNION ALL
+				select 
+						dsdf.id,
+						ifnull(dsdf.device_type,0) as device_type,
+						-1 as vehicle_id,
+						dsdf.is_delete,
+						1 as is_default,
+						dsdf.sensor_param_code,
+						sp.status_alias_map,
+						ifnull(dsdf.sensor_number,0)-1 as sensor_index,
+						ifnull(sp.type,-1) as sensor_type,
+						dsdf.is_calib,
+						dsdf.formular,
+						dsdf.is_dependent_sensor,
+						dsdf.dependent_sensor_number-1 as dependent_sensor_index,
+						ifnull(dsdf1.sensor_param_code,'') as dependent_sensor_code,
+						ifnull(sp.type,-1) as dependent_sensor_type,
+						dsdf.dependent_is_calib,
+						dsdf.dependent_formular,
+						dsdf.display_name as input_name,
+						sp.`name` as func_name,
+						sp.unit as param_unit
+						from m_device_sensor_setting_default dsdf
+						INNER JOIN m_sensor_param sp on sp.sensor_code = dsdf.sensor_param_code
+						LEFT JOIN m_device_sensor_setting_default dsdf1 on dsdf1.sensor_number = dsdf.dependent_sensor_number AND dsdf1.device_type = dsdf.device_type
+						WHERE dsdf.is_redis_sync=0
+						limit 100
+						
+	</select>
+	<update id="updateVehicleSensorSettingSynchStatus" parameterType="VehicleSensorSettingEntity">
+		UPDATE u_vehicle_sensor_setting SET is_redis_sync = 1 where id=#{id}
+	</update>
+	<update id="updateDeviceSensorDefaultSettingSynchStatus" parameterType="VehicleSensorSettingEntity">
+		UPDATE m_device_sensor_setting_default SET is_redis_sync = 1 where  device_type=#{device_type} AND sensor_param_code =#{sensor_param_code} 
+	</update>
+	<delete id="deleteVehicleSensorSetting" parameterType="VehicleSensorSettingEntity">
+		DELETE from u_vehicle_sensor_setting WHERE vehicle_id=#{vehicle_id} AND sensor_number=#{sensor_index} AND sensor_param_code=#{sensor_param_code}
+	</delete>
+	<select id="getAllKeyListSynchronized" resultType="String">
+			
+		select CONCAT(vehicle_id,'_',sensor_param_code,'_',sensor_index) as sensor_key from (
+			select 	
+						ifnull(vs.id,dts.id) as id,
+						d.device_type,
+						v.id as vehicle_id,
+						if(ifnull(vs.is_delete,dts.is_delete)=1,1,if(d.active=1,if(v.active=1,0,1),1)) is_delete,
+						if(ifnull(vs.id,'')='',1,0) is_default,
+						ifnull(vs.sensor_param_code,dts.sensor_param_code) as sensor_param_code,
+						(ifnull(vs.sensor_number,dts.sensor_number)-1) as sensor_index,
+						ifnull(vs.sensor_type,dts.sensor_type) as sensor_type,
+						ifnull(vs.is_calib,dts.is_calib) as is_calib,
+						ifnull(vs.formular,dts.formular) as formular,
+						ifnull(vs.is_dependent_sensor,dts.is_dependent_sensor) as is_dependent_sensor,
+						(ifnull(vs.dependent_sensor_number,dts.dependent_sensor_number)-1) as dependent_sensor_index,
+						ifnull(vs.dependent_sensor_code,dts.dependent_sensor_code) as dependent_sensor_code,
+						ifnull(vs.dependent_sensor_type,dts.dependent_sensor_type) as dependent_sensor_type,
+						ifnull(vs.dependent_is_calib,dts.dependent_is_calib) as dependent_is_calib,
+						ifnull(vs.dependent_formular,dts.dependent_formular) as dependent_formular,
+						ifnull(vs.input_name,dts.input_name) as input_name,
+						ifnull(vs.func_name,dts.func_name) as func_name,
+						ifnull(vs.param_unit,dts.param_unit) as param_unit,
+						if(v.is_redis_sync=1,if( ifnull(vs.is_redis_sync,1)=1,if( ifnull(dts.is_redis_sync,1)=1,1,0),0),0) as is_sync
+				from m_vehicle v
+				INNER JOIN m_device d on d.vehicle_id = v.id
+				LEFT JOIN (
+				select 
+						vs.is_redis_sync,
+						vs.id,
+						vs.vehicle_id,
+						vs.sensor_param_code,
+						vs.sensor_number,
+						ifnull(sp.type,-1) as sensor_type,
+						vs.is_calib,
+						vs.formular,
+						vs.is_dependent_sensor,
+						vs.dependent_sensor_number,
+						ifnull(vs1.sensor_param_code,'') as dependent_sensor_code,
+						ifnull(sp1.type,-1) as dependent_sensor_type,
+						vs.dependent_is_calib,
+						vs.dependent_formular,
+						vs.display_name as input_name,
+						sp.`name` as func_name,
+						sp.unit as param_unit,
+						vs.is_delete
+						from u_vehicle_sensor_setting vs
+						INNER JOIN m_sensor_param sp on sp.sensor_code = vs.sensor_param_code
+						LEFT JOIN d_vehicle_sensor_setting vs1 on vs1.sensor_number = vs.dependent_sensor_number AND vs.vehicle_id = vs1.vehicle_id
+						LEFT JOIN m_sensor_param sp1 on sp1.sensor_code = vs1.sensor_param_code
+				) vs on v.id = vs.vehicle_id
+				LEFT JOIN (
+				select 
+						dsdf.is_redis_sync,
+						dsdf.id,
+						dsdf.device_type,
+						dsdf.sensor_param_code,
+						dsdf.sensor_number,
+						ifnull(sp.type,-1) as sensor_type,
+						dsdf.is_calib,
+						dsdf.formular,
+						dsdf.is_dependent_sensor,
+						dsdf.dependent_sensor_number,
+						ifnull(dsdf1.sensor_param_code,'') as dependent_sensor_code,
+						ifnull(sp.type,-1) as dependent_sensor_type,
+						dsdf.dependent_is_calib,
+						dsdf.dependent_formular,
+						dsdf.display_name as input_name,
+						sp.`name` as func_name,
+						sp.unit as param_unit,
+						dsdf.is_delete
+						from m_device_sensor_setting_default dsdf
+						INNER JOIN m_sensor_param sp on sp.sensor_code = dsdf.sensor_param_code
+						LEFT JOIN m_device_sensor_setting_default dsdf1 on dsdf1.sensor_number = dsdf.dependent_sensor_number AND dsdf1.device_type = dsdf.device_type
+						LEFT JOIN m_sensor_param sp1 on sp1.sensor_code = dsdf1.sensor_param_code
+				) dts on d.device_type = dts.device_type 
+		
+				having sensor_param_code IS NOT NULL 
+		ORDER BY vehicle_id
+		)t
+		GROUP BY id,vehicle_id,sensor_param_code,sensor_index
+	</select>
+	<select id="getAllVehicleSensorSettingByVehicleId" resultMap="VehicleSensorSettingResult" parameterType="VehicleSensorSettingEntity">
+				select 
+				vs.id,
+				-1 as device_type,
+				vs.vehicle_id,
+				vs.is_delete,
+				0 as is_default,
+				vs.sensor_param_code,
+				sp1.status_alias_map,
+				ifnull(vs.sensor_number,0)-1 as sensor_index,
+				ifnull(sp.type,-1) as sensor_type,
+				vs.is_calib,
+				vs.formular,
+				vs.is_dependent_sensor,
+				vs.dependent_sensor_number-1 as dependent_sensor_index,
+				ifnull(vs1.sensor_param_code,'') as dependent_sensor_code,
+				ifnull(sp1.type,-1) as dependent_sensor_type,
+				vs.dependent_is_calib,
+				vs.dependent_formular,
+				vs.display_name as input_name,
+				sp.`name` as func_name,
+				sp.unit as param_unit
+				from d_vehicle_sensor_setting vs
+				INNER JOIN m_sensor_param sp on sp.sensor_code = vs.sensor_param_code
+				LEFT JOIN d_vehicle_sensor_setting vs1 on vs1.sensor_number = vs.dependent_sensor_number AND vs.vehicle_id = vs1.vehicle_id
+				LEFT JOIN m_sensor_param sp1 on sp1.sensor_code = vs1.sensor_param_code
+				WHERE vs.vehicle_id =#{vehicle_id} and vs.sensor_number = #{sensor_index}
+	</select>
+</mapper> 

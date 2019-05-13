@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flex.resource.map.FeeStation">
+	<resultMap id="FeeStationResult" type="FeeStationEntity">
+		<result property="id" column="id" />
+		<result property="price_id" column="price_id" />
+		<result property="name" column="name" />
+		<result property="polygons" column="polygons" />
+		<result property="price" column="price" />
+		<result property="car_type" column="car_type" />
+		<result property="apply_from_date" column="apply_from_date" />
+		<result property="apply_to_date" column="apply_to_date" />
+		<result property="is_delete" column="is_delete" />
+		<result property="direction" column="direction" />
+		<result property="active" column="active" />
+	</resultMap>
+	<resultMap id="TollStationResult" type="TollStationEntity">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="lat" column="lat" />
+		<result property="lon" column="lon" />
+		<result property="direction" column="direction" />
+		<result property="active" column="active" />
+		<result property="is_delete" column="is_delete" />
+	</resultMap>
+	<select id="getAllFeeStation" resultMap="FeeStationResult">
+	select 
+		ft.id,ft.`name`,ft.polygons, ifnull(ftp.price,0) as price,ifnull(ftp.id,0) as price_id,ifnull(ftp.car_type,0) as car_type,
+		'1970-01-01 00:00:00' as apply_from_date , 
+		'2118-01-01 00:00:00' as apply_to_date,
+		if(ft.is_delete=1,1, ifnull(ftp.is_delete,0)) as is_delete,
+		if(ft.active=0,0,ifnull(ftp.active,1)) as `active`,
+		if(ft.is_redis_sync=0,0,if(ftp.is_redis_sync=0,0,1)) as is_redis_sync,ft.direction
+		from m_fee_stations ft
+		LEFT JOIN m_fee_station_price ftp on ftp.fee_station_id=ft.id
+		LEFT JOIN m_vehicle_type ct on ct.id = ftp.car_type
+		HAVING is_redis_sync = 0 limit 100
+	</select>
+	<select id="getAllTollStation" resultMap="TollStationResult">
+		select f.id, f.name, f.central_point_lat as lat, f.central_point_lon as lon, f.direction, f.active, f.is_delete
+		from m_fee_stations f WHERE is_redis_sync = 0
+	</select>
+	
+	
+	
+	<update id="updateFeeStationSyncStatus" parameterType="FeeStationEntity">
+		UPDATE m_fee_stations SET is_redis_sync = 1 where id = #{id}
+	</update>
+	<update id="updateFeeStationPriceSyncStatus" parameterType="FeeStationEntity">
+		UPDATE m_fee_station_price SET is_redis_sync = 1 where id = #{price_id}
+	</update>
+	<insert id="insertRouteFeestation" parameterType="RouteFeeStationEntity">
+		INSERT INTO ${db}.d_route_fee_station_${data_group} (
+		vehicle_id,vehicle_name,plate,imei,user_name,driver_code,driver_name,is_device_driver,fee_station_id,fee_station_poits,trk_time,fee_station_name,money,lat1,lon1,lat2,lon2,address1,address2,created_user,created_date,updated_user
+		)VALUES(
+		#{vehicle_id},#{vehicle_name},#{plate},#{imei},#{user_name},#{driver_code},#{driver_name},#{is_device_driver},#{fee_station_id},#{fee_station_poits},#{trk_time},#{fee_station_name},#{money},#{lat1},#{lon1},#{lat2},#{lon2},#{address1},#{address2},'TCP',now(),'TCP'
+		)
+	</insert>
+</mapper> 

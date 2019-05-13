@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+	  <typeAlias alias="mapE" type="java.util.LinkedHashMap" />
+	  <typeAlias alias="TrackingEntity" type="com.flex.entities.worker.TrackingEntity"/>
+	  <typeAlias alias="SensorDataEntity" type="com.flex.entities.SensorDataEntity"/>
+	  <typeAlias alias="EventEntity" type="com.flex.entities.worker.EventEntity" />
+	  <typeAlias alias="DeviceEntity" type="com.flex.entities.DeviceEntity" />
+	  <typeAlias alias="DeviceActiveEntity" type="com.flex.entities.DeviceActiveEntity" />
+	  <typeAlias alias="UserEntity" type="com.flex.entities.UserEntity" />
+	  <typeAlias alias="DriverEntity" type="com.flex.entities.DriverEntity" />
+	  <typeAlias alias="ExceedspeedEntity" type="com.flex.entities.worker.ExceedspeedEntity" />
+	  <typeAlias alias="FeeStationEntity" type="com.flex.entities.FeeStationEntity" />
+	  <typeAlias alias="TollStationEntity" type="com.flex.entities.TollStationEntity" />
+	  <typeAlias alias="RouteFeeStationEntity" type="com.flex.entities.RouteFeeStationEntity" />
+	  <typeAlias alias="FuelAbnormalyChangeEntity" type="com.flex.entities.FuelAbnormalyChangeEntity" />
+	  <typeAlias alias="LocationEntity" type="com.flex.entities.worker.LocationEntity" />
+	  <typeAlias alias="LocationRoutesEntity" type="com.flex.entities.worker.LocationRoutesEntity" />
+	  <typeAlias alias="ReportSummaryEntity" type="com.flex.entities.worker.ReportSummaryEntity" />
+	  <typeAlias alias="RouteEntity" type="com.flex.entities.worker.RouteEntity" />
+	  <typeAlias alias="ConcreteRouteEntity" type="com.flex.entities.worker.ConcreteRouteEntity" />
+	  <typeAlias alias="FuelSummaryEntity" type="com.flex.entities.worker.FuelSummaryEntity" />
+	  <typeAlias alias="FuelConsumedSummaryEntity" type="com.flex.entities.worker.FuelConsumedSummaryEntity" />
+	  <typeAlias alias="VehicleEntity" type="com.flex.entities.VehicleEntity" />
+	  <typeAlias alias="VehicleAlarmEntity" type="com.flex.entities.VehicleAlarmEntity" />
+	  <typeAlias alias="VehicleAlarmConfigEntity" type="com.flex.entities.VehicleAlarmConfigEntity" />
+	  <typeAlias alias="VehicleSensorSettingEntity" type="com.flex.entities.VehicleSensorSettingEntity" />
+	  <typeAlias alias="SettingEntity" type="com.flex.entities.SettingEntity" />
+	  <typeAlias alias="TrailerEntity" type="com.flex.entities.trailer.TrailerEntity" />
+	  <typeAlias alias="TrailerTrackingEntity" type="com.flex.entities.trailer.TrailerTrackingEntity" />
+	  <typeAlias alias="ReaderTrackingEntity" type="com.flex.entities.trailer.ReaderTrackingEntity" />
+	  <typeAlias alias="TrailerRouteEntity" type="com.flex.entities.trailer.TrailerRouteEntity" />
+	  <typeAlias alias="TrailerSummaryEntity" type="com.flex.entities.trailer.TrailerSummaryEntity" />
+	  <typeAlias alias="SmsTransactionEntity" type="com.flex.entities.SmsTransactionEntity" />
+	   <typeAlias alias="VehicleGovermentEntity" type="com.flex.entities.VehicleGovermentEntity" />
+	  <typeAlias alias="TransportationClientEntity" type="com.flex.entities.TransportationClientEntity" />
+	</typeAliases>
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver" value="${database.driver}" />
+				<property name="url" value="${database.url}" />
+				<property name="username" value="${database.username}" />
+				<property name="password" value="${database.password}" />
+				
+				<property name="poolMaximumActiveConnections" value="50" />
+				<property name="poolMaximumIdleConnections" value="10" />
+				<property name="poolMaximumCheckoutTime" value="120000" />
+				<property name="poolTimeToWait" value="500" />
+				
+				
+				<property name="poolPingQuery" value="select 1" />
+				<property name="poolPingEnabled" value="false" />
+				<!-- <property name="Pool.MaximumWait" value="1000" /> -->
+				<!-- <property name="autoCommitOnClose" value="true"/> -->
+			</dataSource>
+		</environment>
+	</environments>
+	<mappers>
+		<!-- <mapper resource="com/flex/resource/map/_Norms.xml" /> -->
+		<mapper resource="com/flex/resource/map/BaseInfo.xml" />
+		<mapper resource="com/flex/resource/map/User.xml" />
+		<mapper resource="com/flex/resource/map/Driver.xml" />
+		<mapper resource="com/flex/resource/map/Event.xml" />
+		<mapper resource="com/flex/resource/map/Exceedspeed.xml" />
+		<mapper resource="com/flex/resource/map/FeeStation.xml" />
+		<mapper resource="com/flex/resource/map/FuelAbnormlyChange.xml" />
+		<mapper resource="com/flex/resource/map/Location.xml" />
+		<mapper resource="com/flex/resource/map/LocationRoutes.xml" />
+		<mapper resource="com/flex/resource/map/ReportSummary.xml" />
+		<mapper resource="com/flex/resource/map/Route.xml" />
+		<mapper resource="com/flex/resource/map/SensorData.xml" />
+		<mapper resource="com/flex/resource/map/Setting.xml" />
+		<mapper resource="com/flex/resource/map/Server.xml" />
+		<mapper resource="com/flex/resource/map/SummaryFuel.xml" />
+		<mapper resource="com/flex/resource/map/SummaryFuelConsumed.xml" />
+		<mapper resource="com/flex/resource/map/Tracking.xml" />
+		<mapper resource="com/flex/resource/map/Vehicle.xml" />
+		<mapper resource="com/flex/resource/map/VehicleAlarm.xml" />
+		<mapper resource="com/flex/resource/map/VehicleAlarmCfg.xml" />
+		<mapper resource="com/flex/resource/map/VehicleSensorSetting.xml" />
+		<mapper resource="com/flex/resource/map/Trailer.xml" />
+		<mapper resource="com/flex/resource/map/TrailerTracking.xml" />
+		<mapper resource="com/flex/resource/map/TrailerRoute.xml" />
+		<mapper resource="com/flex/resource/map/TrailerSummary.xml" />
+		<mapper resource="com/flex/resource/map/ConcreteRoute.xml" />
+		<mapper resource="com/flex/resource/map/DevicesActive.xml" />
+		<mapper resource="com/flex/resource/map/SmsTransaction.xml" />
+		<mapper resource="com/flex/resource/map/VehicleGoverment.xml" />
+ 		<mapper resource="com/flex/resource/map/TransportClient.xml" />
+	</mappers>
+</configuration>
+

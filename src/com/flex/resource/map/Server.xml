@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flex.resource.map.Server">
+	<resultMap id="RedisResultMap" type="mapE">
+		<result property="database" column="database" />
+		<result property="host" column="host" />
+		<result property="port" column="port" />
+		<result property="password" column="password" javaType="String"/>
+	</resultMap>
+	
+			<!-- CASE WHEN s.`server_group`=0 THEN 1 ELSE 0 END as `database`, -->
+	<select id="getRedisConfigs" resultMap="RedisResultMap">
+		<!-- select 0 as `database`,
+			s.ip as `host`, s.`port`, 'Flex@corp' as `password`
+			 from m_servers s WHERE `key`='redis' -->
+		select 0 as `database`,
+			s.ip as `host`, s.`port`, FROM_BASE64(s.login_password) as `password`
+			 from m_servers s WHERE `key`='redis'
+	</select>
+</mapper> 

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="fix_sensor">
+	<typeAlias alias="SensorDataEntity" type="com.flex.entities.SensorDataEntity" />
+	<resultMap id="fix_sensor_result" class="SensorDataEntity">
+		<result property="vehicle_id" column="vehicle_id" />
+		<result property="data_group" column="data_group" />
+		<result property="sensor_index" column="sensor_index" />
+		<result property="formular" column="formular" />
+		<result property="trk_time" column="trk_time" />
+	</resultMap>
+	<resultMap id="fix_sensor_result1" class="SensorDataEntity" extends="fix_sensor_result">
+		<result property="basic_value" column="basic_value" />
+		<result property="cal_value" column="cal_value" />
+	</resultMap>
+	<select id="getFixSensor_fuel_level_devices" resultMap="fix_sensor_result" parameterClass="SensorDataEntity">
+		select v.id as vehicle_id,u.data_group	,s.sensor_number-1 as sensor_index, s.formular,now() as trk_time from m_vehicle v 
+		LEFT JOIN m_user u on u.user_name = v.user_name
+		INNER JOIN d_vehicle_sensor_setting s on s.vehicle_id=v.id AND s.sensor_param_code in (#sensor_param_code#) 
+		WHERE v.active=1 and v.is_delete=0 
+	</select>
+	<select id="getFixSensor_fuel_level_data" resultMap="fix_sensor_result1" parameterClass="SensorDataEntity">
+		SELECT vehicle_id,sensor_index,trk_time,basic_value,cal_value,#data_group# as data_group, '' as formular 
+		from d_data_sensor_$data_group$ WHERE vehicle_id=#vehicle_id# AND sensor_index=#sensor_index# AND trk_time>=#from_date# AND trk_time<![CDATA[<=]]>#to_date#;
+	</select>
+	
+	<select id="getFixSensor_fuel_consumption_data" resultMap="fix_sensor_result1" parameterClass="SensorDataEntity">
+		select 
+		vehicle_id,
+		#data_group# as data_group,
+		imei,
+		trk_time,
+		sensor_index,
+		sensor_param_id,
+		'' as formular,
+		@config:=(SUBSTRING_INDEX('$formular$','/',-1)*1) as config,
+		@basic_value:=if(@basic_value*1=-1,basic_value,@basic_value) as pre_basic_value,
+		((basic_value-@basic_value)/@config) * (CASE sensor_index WHEN 16 THEN 4 ELSE 1 END) as cal_value,
+		@basic_value:=basic_value as basic_value
+		from 
+		(select @pre_fuel:=0, @basic_value:=-1) as tmp
+		CROSS JOIN
+		d_data_sensor_$data_group$ s
+		where vehicle_id=#vehicle_id#  AND trk_time>=#from_date# AND trk_time<![CDATA[<=]]>#to_date#
+		and sensor_index=#sensor_index#;
+	</select>
+	<update id="updateSensorCalValue" parameterClass="SensorDataEntity">
+		update d_data_sensor_$data_group$ SET cal_value=#cal_value# WHERE vehicle_id=#vehicle_id# AND sensor_index=#sensor_index# AND trk_time=#trk_time#
+	</update>
+</sqlMap> 

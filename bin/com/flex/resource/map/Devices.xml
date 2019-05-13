@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flex.resource.map.Devices">
+	<resultMap id="DeviceResult" type="DeviceEntity">
+		<result property="imei" column="imei" />
+		<result property="dev_name" column="vehicle_name" />
+		<result property="device_type" column="device_type" />
+		<result property="device_sim_id" column="device_sim_id" />
+		<result property="vehicle_id" column="vehicle_id" />
+		<result property="sim_manager_type" column="sim_manager_type" />
+		<result property="user_name" column="user_name" />
+		<result property="active" column="active" />
+		<result property="active_by" column="active_by" />
+		<result property="active_date" column="active_date" />
+		<result property="next_pay_time" column="next_pay_time" />
+		<result property="expired" column="expired" />
+		<result property="icon" column="icon" />
+		<result property="store" column="store" />
+		<result property="data_group" column="device_group_table_id" />
+		<result property="is_using_netkeeping" column="is_using_netkeeping" />
+		<result property="is_goverment" column="is_goverment" />
+		<result property="firmware" column="firmware" />
+		<result property="is_log" column="is_log" />
+		<result property="description" column="description" />
+		<result property="status" column="status" />
+		<result property="plate" column="plate" />
+		<result property="driver_name" column="dr_name" />
+		<result property="use_mileage" column="use_mileage" />
+		<result property="use_engine_input" column="use_engine_input" />
+		<result property="use_dev_speed" column="use_dev_speed" />
+		<result property="distance_param" column="distance_param" />
+		<result property="v_limit_max" column="v_limit_max" />
+		<result property="vlimit_min" column="vlimit_min" />
+		<result property="is_forward" column="is_forward" />
+		<result property="fw_port" column="fw_port" />
+		<result property="fw_ip" column="fw_ip" />
+	</resultMap>
+	<select id="getAllDevices" resultMap="DeviceResult" parameterType="DeviceEntity">
+		SELECT DISTINCT d.imei, d.device_type, ifnull(d.device_sim_id,'') AS device_sim_id, d.sim_manager_type, d.user_name, d.active, 
+		d.active_by, d.active_date, d.next_pay_time, d.expired, v.icon, d.store, 
+		d.device_group_table_id, d.is_using_netkeeping, 
+		d.is_goverment, d.firmware, d.is_log, d.description, d.status, d.use_mileage, 
+		d.created_user, d.created_date, d.updated_user, d.updated_date,
+		ifnull(d.v_limit_max, 40) as v_limit_max,ifnull(d.vlimit_min, 0) as vlimit_min, 
+		ifnull(v.id,-1) as vehicle_id, v.name as vehicle_name, v.plate, dr.name as dr_name,
+		u.data_group,d.use_engine_input,ifnull(d.use_dev_speed,0) as use_dev_speed ,
+		ifnull(d.use_mileage,0) as use_mileage ,ifnull(d.v_limit_max,40) as v_limit_max,
+		ifnull(d.vlimit_min,40) as vlimit_min ,ifnull(d.distance_param,1.000) as distance_param,d.is_forward,d.fw_port,d.fw_ip
+		FROM m_device d
+		INNER JOIN m_user u ON d.user_name = u.user_name
+		LEFT JOIN m_vehicle v ON d.imei = v.device_imei
+		LEFT JOIN m_driver dr ON v.driver_id = dr.id
+	    where d.active = 1
+    	<if test="imei != null and imei!=''">
+          and d.imei = #{imei}
+        </if>
+        <if test="user_name != null and user_name != ''">
+          and d.user_name = #{user_name}
+        </if>
+	</select>
+	
+	
+	<resultMap id="GovermentDevicesReport" type="GovermentDevicesReport">
+		<result property="imei" column="imei" />
+		<result property="vehicle_id" column="vehicle_id" />
+		<result property="user_name" column="user_name" />
+		<result property="is_goverment" column="is_goverment" />
+		<result property="data_group" column="data_group" />
+		
+	</resultMap>
+	<select id="getGovermentDevices" resultMap="GovermentDevicesReport">
+		select d.imei, v.id as vehicle_id, v.user_name, v.is_goverment, u.data_group 
+		from m_vehicle v 
+		inner join m_device d on d.vehicle_id = v.id
+		left join m_user u on u.user_name = v.user_name
+		where v.is_delete =0 and v.active=1 and v.plate&lt;&gt;'' and v.user_name&lt;&gt;'khoadasg' and v.is_goverment=1 
+		order by v.user_name, u.data_group
+	</select>
+	
+	
+	
+	<resultMap id="DeviceResultReport" type="DeviceEntity">
+		<result property="imei" column="imei" />
+	</resultMap>
+	<select id="getAllDevicesReport" resultMap="DeviceResultReport">
+		SELECT d.imei FROM m_device d
+		INNER JOIN m_user u ON d.user_name = u.user_name
+		LEFT JOIN m_vehicle v ON d.imei = v.device_imei
+		LEFT JOIN m_driver dr ON v.driver_id = dr.id
+	    where d.active =1
+	</select>
+</mapper>

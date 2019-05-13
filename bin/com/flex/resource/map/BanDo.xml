@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="BanDoEntity">
+	
+	<resultMap id="BanDoResult" type="BanDoEntity" >
+		<result property="type_4" column="type_4" />
+		<result property="name_4" column="name_4" />
+		<result property="name_3" column="name_3" />
+		<result property="name_2" column="name_2" />
+		<result property="tenduong" column="tenduong" />
+	</resultMap>
+	
+	<select id="getAddressBanDo" resultMap="BanDoResult" parameterType="BanDoEntity" timeout="5000" >
+		Select		type_4, name_4, name_3, name_2, 
+					(select 	tenduong
+					from 		giaothong m 
+					where 		expand(GeometryFromText('POINT(${longitude} ${latitude})', 4326), 0.0005) <![CDATA[&&]]> m.the_geom 
+					  and 		tenduong != '' 
+					  and 		distance(GeometryFromText('POINT(${longitude} ${latitude})', 4326), m.the_geom) <![CDATA[<]]> 0.0008 
+					ORDER BY 	distance(GeometryFromText('POINT(${longitude} ${latitude})', 4326), m.the_geom) asc LIMIT 1) as tenduong 
+	 	From 	hanhchinhxa a 
+		Where 	expand(GeometryFromText('POINT(${longitude} ${latitude})', 4326), 0.0001) <![CDATA[&&]]> a.the_geom 
+		  And 	Within(GeometryFromText('POINT(${longitude} ${latitude})', 4326), a.the_geom) = true LIMIT 1 
+	</select>
+	
+</mapper>

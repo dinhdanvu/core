@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMapConfig
+    PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+	<!-- The properties (name=value) in the file specified here can be used 
+		placeholders in this config file (e.g. “${driver}”. The file is usually relative 
+		to the classpath and is optional. -->
+
+	<settings cacheModelsEnabled="true" enhancementEnabled="true"
+		lazyLoadingEnabled="true" maxRequests="256" maxSessions="128"
+		maxTransactions="64" useStatementNamespaces="false" />
+	<transactionManager type="JDBC">
+		<dataSource type="com.flex.dbmanager.EncryptedSimpleDataSource">
+			<property name="JDBC.Driver" value="" />
+			<property name="JDBC.ConnectionURL" value="" />
+			<property name="JDBC.Username" value="" />
+			<property name="JDBC.Password" value="" />
+
+			<property name="Pool.MaximumActiveConnections" value="400" />
+			<property name="Pool.MaximumIdleConnections" value="10" />
+			<property name="Pool.MaximumCheckoutTime" value="120000" />
+			<property name="Pool.TimeToWait" value="500" />
+			<property name="Pool.MaximumWait" value="60000" />
+			<!-- <property name="Pool.PingQuery" value="SELECT 1 FROM DUAL" />
+			<property name="Pool.PingEnabled" value="false" /> -->
+			<!-- time in millisecs 3600000 = 1h -->
+<!-- 			<property name="Pool.PingConnectionsOlderThan" value="3600000" />
+			<property name="Pool.PingConnectionsNotUsedFor" value="3600000" />
+ -->
+
+		</dataSource>
+	</transactionManager>
+
+	<!-- Identify all SQL Map XML files to be loaded by this SQL map. Notice 
+		the paths are relative to the classpath. -->
+	<sqlMap resource="com/flex/resource/map/BaseInfo.xml" />
+	<sqlMap resource="com/flex/resource/map/User.xml" /> 
+ 	<sqlMap resource="com/flex/resource/map/Driver.xml" /> 
+ 	<sqlMap resource="com/flex/resource/map/Exceedspeed.xml" />
+  	<sqlMap resource="com/flex/resource/map/Location.xml" />
+  	<sqlMap resource="com/flex/resource/map/LocationRoutes.xml" /> 
+	<!-- <sqlMap resource="com/flex/resource/map/Norms.xml" /> -->
+ 	<sqlMap resource="com/flex/resource/map/ReportSummary.xml" />
+  	<sqlMap resource="com/flex/resource/map/Route.xml" />  
+	<sqlMap resource="com/flex/resource/map/Setting.xml" />
+	<sqlMap resource="com/flex/resource/map/Tracking.xml" />
+	<sqlMap resource="com/flex/resource/map/Vehicle.xml" />
+	<sqlMap resource="com/flex/resource/map/Event.xml" />
+ 	<sqlMap resource="com/flex/resource/map/FeeStation.xml" />
+ 	<sqlMap resource="com/flex/resource/map/VehicleAlarmCfg.xml" />
+ 	<sqlMap resource="com/flex/resource/map/VehicleAlarm.xml" />
+ 	<sqlMap resource="com/flex/resource/map/VehicleSensorSetting.xml" />
+ 	<sqlMap resource="com/flex/resource/map/SensorData.xml" />
+ 	<sqlMap resource="com/flex/resource/map/FuelAbnormlyChange.xml" />
+ 	<sqlMap resource="com/flex/resource/map/SummaryFuel.xml" />
+ 	<sqlMap resource="com/flex/resource/map/SummaryFuelConsumed.xml" />
+ 	<!-- chỉ sử dụng khi fix data  -->
+ 	<!-- <sqlMap resource="com/flex/resource/map/FixData.xml" /> -->
+ 	<sqlMap resource="com/flex/resource/map/Server.xml" />
+ 	<sqlMap resource="com/flex/resource/map/Devices.xml" />
+ 	<sqlMap resource="com/flex/resource/map/DevicesActive.xml" />
+ 	<sqlMap resource="com/flex/resource/map/SmsTransaction.xml" />
+ 	<sqlMap resource="com/flex/resource/map/VehicleGoverment.xml" />
+ 	<sqlMap resource="com/flex/resource/map/TransportClient.xml" />
+</sqlMapConfig>

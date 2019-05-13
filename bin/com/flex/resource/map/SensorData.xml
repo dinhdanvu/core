@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flex.resource.map.SensorData">
+	<resultMap id="SensorDataResult" type="SensorDataEntity">
+		<result property="imei" column="imei" />
+		<result property="vehicle_id" column="vehicle_id" />
+		<result property="trk_time" column="trk_time" />
+		<result property="basic_value" column="basic_value" />
+		<result property="cal_value" column="cal_value" />
+	</resultMap>	 
+	<insert id="insertSensorData" parameterType="SensorDataEntity">
+		<if test="value_list != null and value_list.size()>0">
+	      	INSERT INTO ${db}.d_data_sensor_${data_group}
+			(
+				vehicle_id,imei,user_name,trk_time,sensor_index,sensor_param_id,status_alias_map,display_name,basic_value,cal_value,
+				created_user,
+				created_date,
+				updated_user
+			)
+			VALUES
+			<foreach collection="value_list" item="model" index="index" separator=",">
+	        (
+	           #{model.vehicle_id},#{model.imei},#{model.user_name},#{model.trk_time},#{model.sensor_index},#{model.sensor_param_code},
+	           #{model.status_alias_map},#{model.display_name},#{model.basic_value},#{model.cal_value},'TCP', NOW(), 'TCP'
+	        )
+	        </foreach>
+        </if>
+    </insert>
+    <insert id="insertSensorDataSingle" parameterType="SensorDataEntity">
+      INSERT INTO ${db}.d_data_sensor_${data_group}
+		(
+			vehicle_id,imei,user_name,trk_time,sensor_index,sensor_param_id,status_alias_map,basic_value,cal_value,
+			created_user,
+			created_date,
+			updated_user
+		)
+		VALUES(
+			#{vehicle_id},#{imei},#{user_name},#{trk_time},#{sensor_index},#{sensor_param_code},#{status_alias_map},#{basic_value},#{cal_value},
+			'TCP',
+			NOW(),
+			'TCP'
+		)
+    </insert>
+    <select id="getLastSensor" resultMap="SensorDataResult" parameterType="SensorDataEntity">
+    	select ds.imei,ds.vehicle_id,ds.trk_time,ds.basic_value,ds.cal_value from ${db}.d_data_sensor_${data_group} ds WHERE ds.sensor_index = #{sensor_index} AND vehicle_id = #{vehicle_id} AND trk_time <![CDATA[<]]> #{trk_time} 
+    	ORDER BY trk_time DESC LIMIT 1
+    </select>
+    
+    <select id="getFirstSensor" resultMap="SensorDataResult" parameterType="SensorDataEntity">
+    	select ds.imei,ds.vehicle_id,ds.trk_time,ds.basic_value,ds.cal_value from ${db}.d_data_sensor_${data_group} ds WHERE ds.sensor_index = #{sensor_index} AND vehicle_id = #{vehicle_id} AND trk_time <![CDATA[>]]> #{trk_time} 
+    	ORDER BY trk_time ASC LIMIT 1
+    </select>
+</mapper>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flex.resource.map.VehicleAlarmConfig">
+	<resultMap id="VehicleAlarmCfgResult" type="VehicleAlarmConfigEntity">
+		<result property="id" column="id" />
+		<result property="vehicle_id" column="vehicle_id" />
+		<result property="alarm_code" column="alarm_code" />
+		<result property="value" column="value" />
+		<result property="lst_loc_id" column="lst_loc_id" />
+		<result property="send_time" column="send_time" />
+		<result property="is_delete" column="is_delete" />
+		<result property="phone_numbers" column="phone_numbers" />
+		<result property="emails" column="emails" />
+		<result property="send_time_between" column="send_time_between" />
+		<result property="is_alarm_speaker" column="is_alarm_speaker" />
+		<result property="is_alarm_screen" column="is_alarm_screen" />
+		<result property="is_alarm_sms" column="is_alarm_sms" />
+		<result property="is_alarm_email" column="is_alarm_email" />
+		<result property="is_alarm_device_screen" column="is_alarm_device_screen" />
+	</resultMap>
+	<select id="getAllVehicleAlarmCfg" resultMap="VehicleAlarmCfgResult">
+		SELECT 
+		s.id,s.vehicle_id,s.alarm_code,s.`value`,l.lst_location as lst_loc_id,s.send_time,s.is_delete,s.phone_numbers,s.emails,s.send_time_between,s.is_alarm_speaker,s.is_alarm_screen,s.is_alarm_sms,s.is_alarm_email, s.is_alarm_device_screen
+		from u_vehicle_alarm_setting s
+		LEFT JOIN (
+		select vehicle_alarm_setting_id, GROUP_CONCAT(location_id SEPARATOR ',') as lst_location from u_vehicle_alarm_location where location_id>0 GROUP BY vehicle_alarm_setting_id
+		) l ON l.vehicle_alarm_setting_id = s.id
+		where s.is_redis_sync =0
+		limit 100
+	</select>
+	<update id="updateVehicleAlarmCfgSyncStatus" parameterType="VehicleAlarmConfigEntity">
+		UPDATE u_vehicle_alarm_setting SET is_redis_sync = 1 where id = #{id}
+	</update>
+</mapper> 

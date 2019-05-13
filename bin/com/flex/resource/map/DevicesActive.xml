@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flex.resource.map.DevicesActive">
+
+	<resultMap id="DeviceActiveReport" type="DeviceActiveEntity">
+		<result property="imei" column="imei" />
+		<result property="device_type" column="device_type" />
+		<result property="vehicle_id" column="vehicle_id" />
+		<result property="active" column="active" />
+		<result property="time_load" column="time_load" />
+	</resultMap>
+	<select id="getAllActiveDevices" resultMap="DeviceActiveReport">
+		SELECT d.imei, d.device_type, ifnull(v.id,0) as vehicle_id, ifnull(v.active,0) as active, 
+		CASE 
+		     WHEN d.device_type &lt;= 12 OR d.device_type>=28 THEN  DATE_ADD(now(), INTERVAL 5 minute)
+		     WHEN d.device_type > 12 AND d.device_type &lt;15 THEN DATE_ADD(now(), INTERVAL 6 minute)
+		     WHEN d.device_type >= 15 AND d.device_type &lt; 24 THEN DATE_ADD(now(), INTERVAL 7 minute)
+		     WHEN d.device_type = 24  THEN DATE_ADD(now(), INTERVAL 8 minute)
+		     WHEN d.device_type >= 25 AND d.device_type &lt; 28 THEN DATE_ADD(now(), INTERVAL 9 minute)
+		     ELSE DATE_ADD(now(), INTERVAL 10 minute)
+		END as 'time_load'
+		FROM m_device d	
+		LEFT JOIN m_vehicle v on v.id = d.vehicle_id
+		where d.is_delete=0
+	</select>
+	
+</mapper>

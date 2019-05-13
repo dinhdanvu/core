@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flex.resource.map.LocationRoutes">
+	<resultMap id="LocationRoutesResult" type="LocationRoutesEntity"
+		extends="BaseInfo.baseInfo">
+		<result property="id" column="id" />
+		<result property="vehicle_id" column="vehicle_id" />
+		<result property="driver_code" column="driver_code" />
+        <result property="driver_name" column="driver_name"/>
+		<result property="user_name" column="user_name" />
+		<result property="location_id" column="location_id" />
+		<result property="from" column="from" />
+		<result property="to" column="to" />
+		<result property="dev_status" column="dev_status" />
+		<result property="routes_time" column="routes_time" />
+		<result property="distance" column="distance" />
+		<result property="flag_after" column="flag_after" />
+		<result property="alerted" column="alerted" />
+		<result property="start_latitude" column="start_latitude" />
+		<result property="start_longitude" column="start_longitude" />
+	</resultMap>
+	<resultMap id="LocationRoutesResultMini" type="LocationRoutesEntity">
+		<result property="vehicle_id" column="vehicle_id" />
+		<result property="location_id" column="location_id" />
+		<result property="from" column="from" />
+	</resultMap>	
+	<insert id="insertLocationRoutes" parameterType="LocationRoutesEntity">
+		INSERT INTO
+		${db}.d_location_routes_${data_group}
+        (`user_name`, `location_id`,`location_poits`,location_name,driver_code,driver_name,is_device_driver,
+		`vehicle_id`,`vehicle_name`,`plate`,`imei`,
+		`from`, `to`, `dev_status`, 
+		`routes_time`, 
+		`distance`,
+		`flag_after`,
+		`alerted`, 
+		`start_latitude`,
+		`start_longitude`, 
+		`created_user`,
+		`created_date`,
+		`updated_user`
+		)
+		VALUES
+		(
+        #{user_name},#{location_id},#{location_poits},#{location_name},#{driver_code},#{driver_name},#{is_device_driver},
+		#{vehicle_id},#{vehicle_name},#{plate},#{imei},
+		#{from}, #{to}, #{dev_status},
+		#{routes_time},
+		#{distance},
+		#{flag_after}, 
+		#{alerted},
+		#{start_latitude},
+		#{start_longitude},
+		'TCP',
+		now(),
+		'TCP'
+		);
+		<selectKey keyProperty="id" resultType="int">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<update id="updateLocationRoutes" parameterType="LocationRoutesEntity">
+		UPDATE
+		${db}.d_location_routes_${data_group}
+		SET `to`= #{to}, `routes_time` = #{routes_time},
+		`updated_user`= #{updated_user}
+		WHERE
+		`vehicle_id`= #{vehicle_id} AND location_id = #{location_id} AND
+		`from`= #{from}
+	</update>
+	<select id="getAllLstLocationRoutes" resultMap="LocationRoutesResultMini">
+		select  vehicle_id,location_id,max(`from`) `from` FROM d_location_routes_0 GROUP BY vehicle_id,location_id 
+		ORDER BY vehicle_id
+	</select>
+</mapper>

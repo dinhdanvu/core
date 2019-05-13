@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+<settings>	 
+	<setting name="defaultStatementTimeout" value="5000"/>	 
+</settings>
+
+	<typeAliases>
+	  <typeAlias alias="BanDoEntity" type="com.flex.entities.BanDoEntity" />
+	</typeAliases>
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver" value="${database.driver}" />
+				<property name="url" value="${database.url}" />
+				<property name="username" value="${database.username}" />
+				<property name="password" value="${database.password}" />
+				
+				<property name="poolMaximumActiveConnections" value="200" />
+				<property name="poolMaximumIdleConnections" value="50" />
+				<property name="poolMaximumCheckoutTime" value="120000" />
+				<property name="poolTimeToWait" value="500" />
+				
+				<property name="poolPingQuery" value="select 1" />
+				<property name="poolPingEnabled" value="true" />
+								
+				<!-- <property name="driver" value="${database.driver}" />
+				<property name="url" value="${database.url}" />
+				<property name="username" value="${database.username}" />
+				<property name="password" value="${database.password}" />
+				
+				<property name="poolMaximumActiveConnections" value="50" />
+				<property name="poolMaximumIdleConnections" value="10" />
+				<property name="poolMaximumCheckoutTime" value="120000" />
+				<property name="poolTimeToWait" value="500" /> -->
+				<!-- <property name="Pool.MaximumWait" value="1000" /> -->
+				<!-- <property name="autoCommitOnClose" value="true"/> -->
+			</dataSource>
+		</environment>
+	</environments>
+	<mappers>
+		<mapper resource="com/flex/resource/map/BanDo.xml" />
+	</mappers>
+</configuration>
+
+<!-- 
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMapConfig
+    PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+	The properties (name=value) in the file specified here can be used 
+		placeholders in this config file (e.g. “${driver}”. The file is usually relative 
+		to the classpath and is optional.
+
+	<settings cacheModelsEnabled="false" enhancementEnabled="true"
+		lazyLoadingEnabled="false" maxRequests="128" maxSessions="64"
+		maxTransactions="32" useStatementNamespaces="false" />
+	<transactionManager type="JDBC">
+		<dataSource type="com.flex.dbmanager.ADAMap.EncryptedSimpleDataSourceMap">
+			<property name="JDBC.Driver" value="" />
+			<property name="JDBC.ConnectionURL" value="" />
+			<property name="JDBC.Username" value="" />
+			<property name="JDBC.Password" value="" />
+
+			<property name="Pool.MaximumActiveConnections" value="50" />
+			<property name="Pool.MaximumIdleConnections" value="10" />
+			<property name="Pool.MaximumCheckoutTime" value="120000" />
+			<property name="Pool.TimeToWait" value="500" />
+			<property name="Pool.MaximumWait" value="1000" />
+			<property name="Pool.PingQuery" value="SELECT 1 FROM DUAL" />
+			<property name="Pool.PingEnabled" value="false" />
+			time in millisecs 3600000 = 1h
+			<property name="Pool.PingConnectionsOlderThan" value="3600000" />
+			<property name="Pool.PingConnectionsNotUsedFor" value="3600000" />
+
+
+		</dataSource>
+	</transactionManager>
+
+	Identify all SQL Map XML files to be loaded by this SQL map. Notice 
+		the paths are relative to the classpath.
+	<sqlMap resource="com/flex/resource/map/BanDo.xml" />
+</sqlMapConfig> -->

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flex.resource.map.Route">
+	<resultMap id="RouteResult" type="RouteEntity" extends="BaseInfo.baseInfo">
+		<result property="id" column="id" />
+		<result property="vehicle_id" column="vehicle_id" />
+		<result property="imei" column="imei" />
+		<result property="user_name" column="user_name" />
+		<result property="route_type" column="route_type" />
+		<result property="from" column="from" />
+		<result property="to" column="to" />
+		<result property="distance" column="distance" />
+		<result property="start_address" column="start_address" />
+		<result property="start_latitude" column="start_latitude" />
+		<result property="start_longitude" column="start_longitude" />
+		<result property="start_map_id" column="start_map_id" />
+		<result property="stop_address" column="stop_address" />
+		<result property="stop_latitude" column="stop_latitude" />
+		<result property="stop_longitude" column="stop_longitude" />
+		<result property="stop_map_id" column="stop_map_id" />
+		<result property="fuel_signal" column="fuel_signal" />
+		<result property="alerted" column="alerted" />
+		<result property="driver_code" column="driver_code" />
+
+		<result property="data_group" column="data_group" />
+	</resultMap>
+	<insert id="insertRoute" parameterType="RouteEntity">
+		INSERT INTO ${db}.d_routes_${data_group} 
+		(
+			imei,
+			vehicle_id,
+			vehicle_name,
+			plate,
+			user_name,
+			route_type,
+			`from`,
+			`to`,
+			distance,
+			start_address,
+			start_latitude,
+			start_longitude,
+			start_map_id,
+			stop_address,
+			stop_latitude,
+			stop_longitude,
+			stop_map_id,
+			fuel_signal,
+			alerted,
+			driver_code,
+			driver_name,
+			is_device_driver,
+			created_user,
+			created_date,
+			updated_user
+		)
+		VALUES
+		<foreach collection="value_list" item="model" index="index" separator=",">
+			(
+				#{model.imei},
+				#{model.vehicle_id},
+				#{model.vehicle_name},
+				#{model.plate},
+				#{model.user_name},
+				#{model.route_type},
+				#{model.from},
+				#{model.to},
+				#{model.distance},
+				#{model.start_address},
+				#{model.start_latitude},
+				#{model.start_longitude},
+				#{model.start_map_id},
+				#{model.stop_address},
+				#{model.stop_latitude},
+				#{model.stop_longitude},
+				#{model.stop_map_id},
+				#{model.fuel_signal},
+				#{model.alerted},
+				#{model.driver_code},
+				#{model.driver_name},
+				#{model.is_device_driver},
+				'TCP',
+				now(),
+				'TCP'
+			)
+		</foreach>	
+	</insert>
+	<update id="updateRouteStopToRun" parameterType="RouteEntity">
+		UPDATE 	${db}.d_routes_${data_group} 
+		SET		`to`= #{to}
+		WHERE 	imei = #{imei}
+		  AND 	route_type= #{route_type}
+		  AND 	DATE_FORMAT(`to`,'%Y-%m-%d %H:%i:%s') = '1970-01-01 07:00:00'
+	</update>
+	
+</mapper>

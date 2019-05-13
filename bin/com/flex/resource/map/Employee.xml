@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flex.resource.map.Employee">
+	<resultMap id="EmployeeResultSynch" type="EmployeeEntity">
+		<result property="id" column="id" />
+		<result property="key" column="key" />
+		<result property="name" column="name" />
+	<!-- 	<result property="name_on_card" column="name_on_card" /> -->
+		<result property="phone" column="phone" />
+		<result property="license_no" column="license_no" />
+		<result property="user_name" column="user_name" />
+		<result property="expired" column="expired" />
+		<result property="active" column="active" />
+		<result property="is_delete" column="is_delete" />
+	</resultMap>
+	<select id="getAllEmployeeSynch" resultMap="EmployeeResultSynch">
+		SELECT dr.id,concat( dr.user_name,'_',dr.license_no) as `key`,dr.name, dr.phone,dr.license_no,dr.user_name,ifnull(dr.active,0) as active,
+		dr.expired,is_delete
+		FROM m_Employee dr where dr.is_redis_sync =0 AND user_name IS NOT NULL limit 100 
+	</select>
+	<insert id="insertEmployee" parameterType="EmployeeEntity">
+		INSERT INTO m_Employee 
+		(
+			name, license_no,user_name,active, created_user,created_date,updated_user
+		)
+		VALUES
+		(
+			#{name},
+			#{license_no},
+			#{user_name},
+			1,
+			'TCP',
+			now(),
+			'TCP'
+		)
+	</insert>
+	<update id="updateEmployeeSynchStatus" parameterType="EmployeeEntity">
+		UPDATE m_Employee SET is_redis_sync = 1 where id = #{id}
+	</update>
+	
+	<!-- <update id="updateEmployee" parameterType="EmployeeEntity">
+		UPDATE m_Employee SET name_on_card = #{name_on_card}, is_redis_sync = 0 where id = #{id}
+	</update> -->
+	
+	<select id="getEmployeeByEmp_no" resultMap="EmployeeResultSynch" parameterType="EmployeeEntity">
+		SELECT dr.id,concat( dr.user_name,'_',dr.license_no) as `key`,dr.name,dr.phone,dr.license_no,dr.user_name,ifnull(dr.active,0) as active,
+		dr.expired,dr.is_delete
+		FROM m_Employee dr where dr.is_delete=0 AND dr.user_name=#{user_name} AND dr.license_no=#{license_no}
+	</select>
+</mapper>

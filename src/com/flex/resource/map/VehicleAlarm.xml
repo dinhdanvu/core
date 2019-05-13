@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flex.resource.map.VehicleAlarm">
+	<insert id="insertVehicleAlarm" parameterType="VehicleAlarmEntity">
+		INSERT INTO ${db}.d_alarm_${data_group}(
+			alarm_code, vehicle_id, vehicle_name, imei, user_name, location_id, location_poits, driver_code, driver_name, is_device_driver, trk_time, latitude, longitude, address, msg_content, is_read, read_time, is_alarm_speaker, is_alarm_sms, is_alarm_email, is_alarm_screen, is_notification, is_alarm_device_screen, sent_limit, sent_count, phones, emails, is_read_sms, read_time_sms, result_status_sms, sent_count_sms, is_read_email, read_time_email, result_status_email, sent_count_email, created_user, created_date, updated_user
+		)VALUES(
+			#{alarm_code},#{vehicle_id},#{vehicle_name},#{imei},#{user_name},#{location_id},#{location_poits},#{driver_code},#{driver_name},#{is_device_driver},#{trk_time},#{latitude},#{longitude},#{address},#{msg_content},#{is_read},#{read_time},#{is_alarm_speaker},#{is_alarm_sms},#{is_alarm_email},#{is_alarm_screen},#{is_notification},#{is_alarm_device_screen},#{sent_limit},#{sent_count},#{phone_numbers},#{emails},#{is_read_sms},#{read_time_sms},#{result_status_sms},#{sent_count_sms},#{is_read_email},#{read_time_email},#{result_status_email},#{sent_count_email},'TCP',now(),'TCP'
+		);
+	</insert>
+	<update id="updateVehicleAlarmSMS" parameterType="VehicleAlarmEntity">
+		UPDATE ${db}.d_alarm_${data_group} SET is_read_sms = #{is_read_sms}, result_status_sms = #{result_status_sms}, read_time_sms = #{read_time_sms}, sent_count_sms = #{sent_count_sms} WHERE vehicle_id = #{vehicle_id} AND alarm_code = #{alarm_code} AND trk_time = #{trk_time}
+	</update>
+	<update id="updateVehicleAlarmEmail" parameterType="VehicleAlarmEntity">
+		UPDATE ${db}.d_alarm_${data_group} SET is_read_email = #{is_read_email}, result_status_email = #{result_status_email}, read_time_email = #{read_time_email}, sent_count_email = #{sent_count_email} WHERE vehicle_id = #{vehicle_id} AND alarm_code = #{alarm_code} AND trk_time = #{trk_time}
+	</update>
+</mapper> 
