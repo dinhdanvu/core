@@ -2558,4 +2558,17 @@ public class RedisProviderCluster extends JedisClusterPool implements IRedisProv
 			return null;
 		}
 	}
+	@Override
+	public boolean rollbackData(List<String> strings, String key) {
+		try {
+			for (String str : strings) {
+				lPush(key, str);
+			}
+		} catch (Exception e) {
+			log.error("rollbackData", e);
+			return false;
+		}
+		return true;
+
+	}
 }

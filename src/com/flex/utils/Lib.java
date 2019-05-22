@@ -70,6 +70,7 @@ import java.util.regex.Pattern;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
+import com.google.gson.GsonBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -2742,7 +2743,7 @@ public final class Lib {
 	 */
 	public static <T> String convertObj2JsonString(T obj) {
 		try {
-			Gson gson = new Gson();
+			Gson gson=  new GsonBuilder().setDateFormat("MMM dd, yyyy hh:mm:ss a").create();
 			String jsonStr = gson.toJson(obj);
 			return jsonStr;
 		} catch (Exception e) {
@@ -2760,7 +2761,7 @@ public final class Lib {
 	 */
 	public static <T> T convertJson2Object(String jsonStr, Class<T> clazz) {
 		try {
-			Gson gson = new Gson();
+			Gson gson=  new GsonBuilder().setDateFormat("MMM dd, yyyy hh:mm:ss a").create();
 			return gson.fromJson(jsonStr, clazz);
 		} catch (Exception e) {
 			_libLog.error(e);

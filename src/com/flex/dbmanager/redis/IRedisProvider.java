@@ -387,7 +387,7 @@ public interface IRedisProvider {
 	/**
 	 * delete keys
 	 * 
-	 * @param keys...
+	 * @param keys
 	 * @return
 	 */
 	public boolean deleteKeys(String... keys);
@@ -402,4 +402,6 @@ public interface IRedisProvider {
 
 	public boolean renameKey(String oldkey, String newkey);
 	public boolean eval(String script);
+
+	boolean rollbackData(List<String> strings, String key_get);
 }

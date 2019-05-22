@@ -166,37 +166,7 @@ public class BanDoService extends DBMap {
  * @return
  */
 	public static String sendRequest(String url) {
-        String result = "";
-        try {
-            HttpClient client = new DefaultHttpClient();
-            HttpParams httpParameters = client.getParams();
-            HttpConnectionParams.setConnectionTimeout(httpParameters, 5000); // set timeout = 5s
-            HttpConnectionParams.setSoTimeout(httpParameters, 5000);
-            HttpConnectionParams.setTcpNoDelay(httpParameters, true);
-            HttpGet request = new HttpGet();
-            request.setURI(new URI(url));
-            HttpResponse response = client.execute(request);
-            InputStream ips = response.getEntity().getContent();
-            BufferedReader buf = new BufferedReader(new InputStreamReader(ips,"UTF-8"));
-            StringBuilder sb = new StringBuilder();
-            String s;
-            while (true) {
-                s = buf.readLine();
-                if (s == null || s.length() == 0)
-                    break;
-                sb.append(s);
-            }
-            result = sb.toString();
-            buf.close(); 
-            ips.close();
-            request.releaseConnection(); // Giải phóng connection
-         
-          
-        } catch (Exception e) {
-        	logOPM.error("ERROR1: KHONG KET NOI DC VOI URL: " + url + "\n" + e.getMessage());
-        	return null;
-        }
-        return result;
+        return HttpRequest.get(url).body();
     }
 	
 	public static String getOSMAddressByPoolConnection(PoolingHttpClientConnectionManager connManager, CloseableHttpClient client, String url) 

@@ -2039,7 +2039,7 @@ public class RedisProvider extends RedisCache implements IRedisProvider{
 	/**
 	 * delete keys
 	 * 
-	 * @param keys...
+	 * @param keys
 	 * @return
 	 */
 	public boolean deleteKeys(String... keys) {
@@ -2319,5 +2319,19 @@ public class RedisProvider extends RedisCache implements IRedisProvider{
 			log.error("eval", ex);
 			return false;
 		}
+	}
+
+	@Override
+	public boolean rollbackData(List<String> strings, String key) {
+		try {
+			for (String str : strings) {
+				lPush(key, str);
+			}
+		} catch (Exception e) {
+			log.error("rollbackData", e);
+			return false;
+		}
+		return true;
+
 	}
 }
