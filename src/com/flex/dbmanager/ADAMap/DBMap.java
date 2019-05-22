@@ -11,13 +11,11 @@ import com.flex.utils.IniFile;
 import com.flex.utils.Lib;
 import com.flex.utils.SecretCards;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.*;
 
 //~--- JDK imports ------------------------------------------------------------
 
 
-import java.io.Reader;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,6 +35,8 @@ import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import java.sql.*;
+import org.apache.commons.dbcp2.*;
 //import org.apache.commons.logging.Log;
 //import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
@@ -69,6 +69,7 @@ public class DBMap {
     public static SqlSessionFactory sqlMap;
     protected static final FLLogger log = FLLogger.getLogger("db/adamapLog");
     private static String environment="development";
+    private static BasicDataSource connectionPool;
 
     //~--- static initializers ------------------------------------------------
 
@@ -90,6 +91,17 @@ public class DBMap {
 //        	   Properties props = new Properties();
 //        	   InputStream input = new FileInputStream(proties_file);
 //        	   props.load(input);
+
+
+               String dbUrl = "jdbc:postgresql://210.86.239.174:5432/maps";
+               connectionPool = new BasicDataSource();
+               connectionPool.setUsername("postgres");
+               connectionPool.setPassword("Ba3nD9o62");
+               connectionPool.setDriverClassName("org.postgresql.Driver");
+               connectionPool.setUrl(dbUrl);
+               connectionPool.setInitialSize(1);
+
+
         	   Properties props =initProperties();
         	   sqlMap = new SqlSessionFactoryBuilder().build(configReader,environment,props);
             log.info("connect DB Successful");
@@ -105,14 +117,73 @@ public class DBMap {
         }
     }
 public static void main(String[] args){
-	DBMap db =new DBMap();
-	db.initProperties();
-	try {
-		db.queryForObject("sss", null);
-	} catch (SQLException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
+//	DBMap db =new DBMap();
+//	db.initProperties();
+//	try {
+//		db.queryForObject("sss", null);
+//	} catch (SQLException e) {
+//		// TODO Auto-generated catch block
+//		e.printStackTrace();
+//	}
+    String dbUrl = "jdbc:postgresql://210.86.239.174:5432/maps";
+    connectionPool = new BasicDataSource();
+
+    connectionPool.setUsername("postgres");
+    connectionPool.setPassword("Ba3nD9o62");
+    connectionPool.setDriverClassName("org.postgresql.Driver");
+    connectionPool.setUrl(dbUrl);
+    connectionPool.setInitialSize(1);
+    try {
+        Connection connection = connectionPool.getConnection();
+
+        Statement stmt = connection.createStatement();
+//        stmt.executeUpdate("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)");
+//        stmt.executeUpdate("INSERT INTO ticks VALUES (now())");
+//        ResultSet rs = stmt.executeQuery("SELECT tick FROM ticks");
+//        while (rs.next()) {
+//            System.out.println("Read from DB: " + rs.getTimestamp("tick") + "\n");
+//        }
+            try {
+				BufferedReader br = new BufferedReader(new FileReader("D:\\latlon.txt"));
+				String line = "";
+				int i = 0;
+
+				while (true) {
+					line = br.readLine();
+
+					if (line == null)
+						break;
+					if (i++ > 10)
+					    break;
+					String[] str = line.split(",");
+					//Double lat = Double.parseDouble(str[0]);
+                    //Double lon = Double.parseDouble(str[1]);
+                    String lat = str[0];
+                    String lon = str[1];
+                    String sql = "Select type_4, name_4, name_3, name_2," +
+                            "(select tenduong " +
+                            "from giaothong m " +
+                            "where expand(GeometryFromText('POINT("+lat+" "+ lon+")', 4326), 0.0005)&& m.the_geom " +
+                            " and tenduong != '' " +
+                            " and distance(GeometryFromText('POINT("+lat+" "+ lon+")', 4326), m.the_geom) < 0.0008 " +
+                            "ORDER BY distance(GeometryFromText('POINT("+lat+" "+ lon+")', 4326), m.the_geom) asc LIMIT 1) as tenduong " +
+                            " From hanhchinhxa a " +
+                            "Where expand(GeometryFromText('POINT("+lat+" "+ lon+")', 4326), 0.0001) && a.the_geom " +
+                            "  And Within(GeometryFromText('POINT("+lat+" "+ lon+")', 4326), a.the_geom) = true LIMIT 1";
+                    ResultSet rs = stmt.executeQuery(sql);
+                    int x = 0;
+				}
+				br.close();
+			}
+			catch (FileNotFoundException e){
+				e.printStackTrace();
+			}
+			catch (IOException e){
+				e.printStackTrace();
+			}
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
 }
 	private static Properties initProperties(){
 		try{
@@ -614,22 +685,70 @@ public static void main(String[] args){
 
         // A List of result objects
         List lsRet=null;
-    	SqlSession session = sqlMap.openSession(true);
+
         try {
-            // Ask SqlMap to do queryForList task
-        	lsRet = session.selectList(aSqlID,aParamObj);
-//            lsRet = session.queryForList(aSqlID, aParamObj);
-        } catch(Exception ex) {
-        	log.error(ex);
-        	throw ex;
-        }finally {
-			session.close();
-		}
+            Connection connection = connectionPool.getConnection();
+            String sql = "Select type_4, name_4, name_3, name_2," +
+                    "(select tenduong from giaothong m " +
+                    "where expand(GeometryFromText('POINT(10.78370200 106.80706000)', 4326), 0.0005) && m.the_geom " +
+                    "and tenduong != ''  and distance(GeometryFromText('POINT(10.78370200 106.80706000)', 4326), m.the_geom) < 0.0008 " +
+                    "ORDER BY distance(GeometryFromText('POINT(10.78370200 106.80706000)', 4326), m.the_geom) asc LIMIT 1) as tenduong  " +
+                    "From hanhchinhxa a Where expand(GeometryFromText('POINT(10.78370200 106.80706000)', 4326), 0.0001) && a.the_geom " +
+                    "And Within(GeometryFromText('POINT(10.78370200 106.80706000)', 4326), a.the_geom) = true LIMIT 1";
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        int n = 1;
+    	SqlSession session = sqlMap.openSession(true);
+
+//        try {
+//            // Ask SqlMap to do queryForList task
+//        	lsRet = session.selectList(aSqlID,aParamObj);
+////            lsRet = session.queryForList(aSqlID, aParamObj);
+//        } catch(Exception ex) {
+//        	log.error(ex);
+//        	throw ex;
+//        }finally {
+//			session.close();
+//		}
 
         // return a list of result objects
         return lsRet;
     }
+    /**
+     *
+     * Make an query to DB for a list of objects
+     *
+     * @param aSqlID a mapped query orgID
+     * @param aParamObj The parameter object (e.g. JavaBean, Map, XML etc.)
+     * @return List         A List of result objects
+     * @throws java.sql.SQLException - If an error occurs
+     *
+     */
+    protected List queryForListP(String aSqlID, Object aParamObj)
+            throws SQLException {
 
+        // A List of result objects
+        List lsRet=null;
+
+        SqlSession session = sqlMap.openSession(true);
+        try {
+            // Ask SqlMap to do queryForList task
+            lsRet = session.selectList(aSqlID,aParamObj);
+//            lsRet = session.queryForList(aSqlID, aParamObj);
+        } catch(Exception ex) {
+            log.error(ex);
+            throw ex;
+        }finally {
+            session.close();
+        }
+
+        // return a list of result objects
+        return lsRet;
+    }
     /**
      * 
      * Executes a mapped SQL SELECT statement that returns data to populate
